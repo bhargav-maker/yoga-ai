@@ -1,147 +1,175 @@
-# YogaIntelliJ
+# Yoga AI (Poddar Yogis) 🧘‍♂️✨
 
-YogaIntelliJ is an AI-powered yoga trainer that uses computer vision and machine learning to detect yoga poses in real time through a webcam. It analyzes the user’s posture, compares it with the selected pose, and provides real-time feedback using a skeleton overlay and pose timing metrics.
+An AI-powered real-time yoga posture detector and trainer built with React, TensorFlow.js, and MoveNet. It tracks human body keypoints in real time through the user's webcam, evaluates posture alignment against targeted yoga asanas, provides visual skeleton feedback, and tracks holding duration and accuracy.
 
-This project combines:
-- A React frontend for the user interface and webcam experience
-- TensorFlow.js and MoveNet for pose estimation
-- A custom trained pose-classification model for identifying yoga poses
+[![GitHub Repository](https://img.shields.io/badge/GitHub-bhargav--maker%2Fyoga--ai-blue?logo=github)](https://github.com/bhargav-maker/yoga-ai)
+[![React](https://img.shields.io/badge/React-18.x-61dafb?logo=react)](https://reactjs.org/)
+[![TensorFlow.js](https://img.shields.io/badge/TensorFlow.js-MoveNet-orange?logo=tensorflow)](https://www.tensorflow.org/js)
 
-## Features
+---
 
-- Real-time pose detection using webcam
-- Yoga pose classification
-- Visual skeleton overlay on the video feed
-- Pose timing and best performance tracking
-- Multi-page app with onboarding and tutorial flow
-- Browser-based AI inference using TensorFlow.js
+## 🌟 Key Features
 
-## Tech Stack
+- **⚡ Real-Time Pose Tracking**: High-speed, smooth 30–60 FPS pose landmark estimation using MoveNet Lightning.
+- **🎯 Dynamic Skeleton Overlay**: Real-time canvas overlay rendering keypoint connections (joints, limbs, spine) synchronized to video aspect ratio.
+- **📦 100% Offline AI Inference**: Neural network classification weights (`model.json` + binary shards) are bundled locally in the client application — eliminating reliance on external cloud storage.
+- **⏱️ Hold-Time & Streak Counter**: Measures how long a user maintains correct alignment for each pose, with real-time feedback audio and best-time tracking.
+- **🧘 Multi-Pose Support**: Accurately recognizes classic yoga asanas including:
+  - 🌳 **Tree Pose**
+  - 🪑 **Chair Pose**
+  - 🐍 **Cobra Pose**
+  - ⚔️ **Warrior Pose**
+  - 🐕 **Downward Dog Pose**
+  - 🤸 **Shoulderstand Pose**
+  - 📐 **Triangle Pose**
+- **💻 Cross-Platform & Lightweight**: Runs entirely inside modern desktop web browsers (Chrome, Edge, Firefox, Brave) without needing dedicated GPU hardware or cloud servers.
 
-Frontend:
-- React
-- React Router
-- TensorFlow.js
-- @tensorflow-models/pose-detection
-- react-webcam
+---
 
-Model / Training:
-- Python
-- TensorFlow
-- Keras
-- pandas
-- scikit-learn
-- TensorFlow.js conversion tools
-
-## Project Structure
+## 🏗️ Architecture & How It Works
 
 ```text
-YogaIntelliJ-main/
-├── .gitignore
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   ├── .gitignore
-│   ├── package.json
-│   ├── package-lock.json
-│   ├── README.md
-│   └── corsconfig.json
+[Webcam Feed] ──> [MoveNet Lightning Model]
+                        │
+                        ▼ (17 Body Keypoints x,y)
+          [Normalization & Feature Vector]
+                        │
+                        ▼
+          [Custom Pose Classifier Model]
+                        │
+                        ▼
+      [Pose Confidence & Classification]
+                        │
+                        ▼
+   [Real-Time Visual Skeleton & Timing Tracker]
+```
+
+1. **Video Ingestion**: Captured at 640×480 (or native device resolution) via `react-webcam`.
+2. **Keypoint Detection**: Google MoveNet model extracts 17 body coordinates (shoulders, elbows, wrists, hips, knees, ankles, etc.) per frame.
+3. **Posture Normalization**: Distance and bounding-box normalization is performed to make detection invariant to camera distance.
+4. **Classification**: The local TensorFlow.js neural network evaluates the landmark feature vector against trained pose classes.
+5. **Interactive UI**: The UI draws high-confidence joints on an HTML5 `<canvas>` synced dynamically to the camera feed and triggers audible countdown cues.
+
+---
+
+## 📁 Project Directory Structure
+
+```text
+yoga-ai/
 ├── classification model/
-│   ├── data.py
-│   ├── movenet.py
-│   ├── preprocessing.py
-│   ├── training.py
-│   ├── train_data.csv
-│   ├── test_data.csv
-│   ├── model/
-│   ├── csv_per_pose/
-│   └── yoga_poses/
-├── package-lock.json
+│   ├── movenet.py                 # MoveNet feature extraction & keypoint landmarking
+│   ├── data.py                    # Dataset loading & preprocessing utilities
+│   ├── preprocessing.py           # Coordinate normalization and CSV landmark conversion
+│   ├── training.py                # Keras neural network training pipeline & TF.js exporter
+│   ├── train_data.csv             # Extracted landmark training dataset
+│   ├── test_data.csv              # Extracted landmark evaluation dataset
+│   ├── model/                     # Trained TensorFlow.js model artifacts
+│   │   ├── model.json             # Model topology & weights manifest
+│   │   └── group1-shard1of1.bin   # Trained weight binaries
+│   └── yoga_poses/                # Raw dataset images categorized by pose
+│
+├── frontend/
+│   └── Poddar-Yogis-frontend/
+│       └── Poddar-Yogis-frontend/
+│           ├── .env               # Port, fast refresh, and Windows watcher config
+│           ├── public/
+│           │   ├── index.html     # HTML entry point
+│           │   └── model/         # Offline bundled neural network weights
+│           │       ├── model.json
+│           │       └── group1-shard1of1.bin
+│           ├── src/
+│           │   ├── Yoga.js        # Core camera, MoveNet tracking & skeleton canvas
+│           │   ├── Home.js        # Landing page & navigation
+│           │   ├── Instructions.js# How-to-use guide
+│           │   ├── Tutorials.js   # Detailed pose visual tutorials
+│           │   ├── About.js       # About project & developer details
+│           │   └── utils/         # Pose metadata, images, and audio assets
+│           └── package.json
+│
+├── .gitignore                     # Git ignore rules for node_modules, cache, & builds
 └── README.md
 ```
 
-## How It Works
+---
 
-1. The webcam captures the user’s pose in real time.
-2. MoveNet detects keypoints from the body.
-3. The detected landmarks are normalized and converted into a feature vector.
-4. A trained TensorFlow model classifies the pose.
-5. If the pose confidence exceeds the threshold, the app tracks the hold time and indicates a successful pose.
-
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js and npm
-- Python 3
-- A webcam connected to the system
+- **Node.js**: v16.x, v18.x, or v20.x
+- **npm**: v8.x or newer
+- **Modern Web Browser**: Google Chrome (recommended), Microsoft Edge, or Firefox with webcam permissions enabled.
+- *(Optional for Model Training)*: Python 3.8+ with TensorFlow, pandas, and scikit-learn.
 
-### 1) Clone the repository
+---
 
-```bash
-git clone https://github.com/VarunRao18/YogaIntelliJ-main.git
-cd YogaIntelliJ-main
-```
+### Installation & Running Frontend
 
-### 2) Install and run the frontend
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/bhargav-maker/yoga-ai.git
+   cd yoga-ai
+   ```
 
-```bash
-cd frontend
-npm install
-npm start
-```
+2. **Navigate to the frontend directory**:
+   ```bash
+   cd frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend
+   ```
 
-This will start the React app in development mode. Open the URL printed in the terminal (usually http://localhost:3000).
+3. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### 3) Model training pipeline
+4. **Start the development server**:
+   ```bash
+   npm start
+   ```
 
-The classification model code is located in the `classification model/` folder.
+5. **Open your browser**:
+   Navigate to [http://localhost:3000](http://localhost:3000). Allow browser camera permissions when prompted.
 
-```bash
-cd "classification model"
-pip install tensorflow tensorflowjs pandas scikit-learn
-python training.py
-```
+---
 
-This script:
-- loads the training and test CSV files
-- preprocesses the landmark data
-- builds a pose-classification model
-- evaluates accuracy
-- converts the trained model into TensorFlow.js format
+### (Optional) Retraining the Pose Classifier
 
-## App Pages
+To train the classification model on custom images or new yoga poses:
 
-- Home: landing page and navigation
-- Start / Yoga: webcam-based yoga training and timing
-- Tutorials: usage guidance
-- About: project information and developer details
+1. **Navigate to the model directory**:
+   ```bash
+   cd "classification model"
+   ```
 
-## Example Yoga Poses
+2. **Install Python requirements**:
+   ```bash
+   pip install tensorflow tensorflowjs pandas scikit-learn opencv-python
+   ```
 
-The current app supports pose categories such as:
-- Tree
-- Chair
-- Cobra
-- Warrior
-- Dog
-- Shoulderstand
-- Triangle
+3. **Run the training script**:
+   ```bash
+   python training.py
+   ```
 
-## Notes
+4. **Copy the exported model**:
+   Copy generated `model.json` and `.bin` files from `classification model/model/` into `frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/public/model/`.
 
-- The frontend depends on TensorFlow.js and browser-based AI inference.
-- The classification model is stored in the project and used by the app.
-- If deploying publicly, ensure the model files are hosted correctly and the frontend model URL is updated as needed.
+---
 
-## License
+## 🛠️ Tech Stack
 
-This project is currently shared as an open-source educational project. Please review the repository for any explicit licensing terms before commercial use.
+- **Frontend**: React, React Router, HTML5 Canvas, WebCam API
+- **Computer Vision & AI**: TensorFlow.js, `@tensorflow-models/pose-detection`, MoveNet Lightning
+- **Pose Classification**: Custom Deep Neural Network (DNN) trained with Keras/TensorFlow, converted to TF.js
+- **Audio & Assets**: Web Audio API / HTML5 Audio cues for timing countdowns
 
-## Contributing
+---
 
-Contributions, improvements, and new pose types are welcome. If you want to enhance the project, feel free to fork the repository and open a pull request.
+## 🤝 Contributing
 
-## Project Goal
+Contributions, issues, and feature requests are welcome! Feel free to check the [Issues](https://github.com/bhargav-maker/yoga-ai/issues) page.
 
-YogaIntelliJ is designed to demonstrate how AI and computer vision can be applied to fitness and wellness. It combines real-time body keypoint detection with machine learning to create an interactive yoga experience in the browser.
+---
+
+## 📜 License
+
+This project is open-source for educational and personal use.
