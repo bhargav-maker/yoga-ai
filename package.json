@@ -2,9 +2,13 @@
   "name": "yoga-ai",
   "version": "1.0.0",
   "description": "AI-Powered Real-Time Yoga Pose Detection and Training Web App",
-  "main": "index.js",
+  "main": "bin/cli.js",
+  "bin": {
+    "yoga-ai": "./bin/cli.js"
+  },
   "scripts": {
-    "start": "npm --prefix frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend start",
+    "start": "node bin/cli.js",
+    "dev": "npm --prefix frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend start",
     "build": "npm --prefix frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend run build",
     "deploy": "npm --prefix frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend run deploy"
   },

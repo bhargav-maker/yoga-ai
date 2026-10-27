@@ -101,9 +101,18 @@ yoga-ai/
 - **Modern Web Browser**: Google Chrome (recommended), Microsoft Edge, or Firefox with webcam permissions enabled.
 - *(Optional for Model Training)*: Python 3.8+ with TensorFlow, pandas, and scikit-learn.
 
+### ⚡ Run Instantly using NPX (No Manual Setup)
+
+You can run Yoga AI directly via `npx` without manually navigating folders:
+
+```bash
+npx github:bhargav-maker/yoga-ai
+```
+*(Or once published to npm: `npx yoga-ai`)*
+
 ---
 
-### Installation & Running Frontend
+### Installation & Running Locally
 
 1. **Clone the repository**:
    ```bash
