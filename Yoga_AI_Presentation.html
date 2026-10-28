@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoga AI: Poddar Yogis - Exhibition Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(22, 30, 49, 0.75);
+      --border-card: rgba(255, 255, 255, 0.1);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.35);
+      --accent: #0ea5e9;
+      --accent-glow: rgba(14, 165, 233, 0.35);
+      --purple: #a855f7;
+      --amber: #f59e0b;
+      --pink: #ec4899;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Ambient Background Glow */
+    .glow-orb-1 {
+      position: absolute;
+      top: -10%;
+      left: 15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .glow-orb-2 {
+      position: absolute;
+      bottom: -10%;
+      right: 15%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Slides Container */
+    .deck-container {
+      width: 92vw;
+      max-width: 1300px;
+      height: 84vh;
+      max-height: 780px;
+      position: relative;
+      z-index: 10;
+      perspective: 1000px;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-card);
+      border-radius: 28px;
+      padding: 50px 60px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(60px) scale(0.96);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0) scale(1);
+    }
+
+    /* Header & Tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 40%, var(--text-muted) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* Grid Layouts */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      height: 100%;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      height: 100%;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 14px;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .card-desc li {
+      margin-bottom: 8px;
+      margin-left: 18px;
+    }
+
+    /* Big Hero Title Slide */
+    .hero-slide {
+      justify-content: center;
+      align-items: flex-start;
+      padding-left: 80px;
+    }
+
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 58px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-tagline {
+      font-size: 22px;
+      color: var(--text-muted);
+      max-width: 800px;
+      line-height: 1.5;
+      margin-bottom: 40px;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .meta-val {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Pipeline Step */
+    .pipeline-step {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+
+    .step-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .step-content p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    /* Navigation Bar */
+    .controls-bar {
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 20;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary);
+      color: #000;
+      border-color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      width: 32px;
+      background: var(--primary);
+    }
+
+    .fs-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-orb-1"></div>
+  <div class="glow-orb-2"></div>
+
+  <div class="deck-container">
+
+    <!-- SLIDE 1 -->
+    <div class="slide hero-slide active">
+      <div class="tag">AI & Healthcare Innovation • 2026</div>
+      <h1 class="hero-title">Yoga AI: Poddar Yogis</h1>
+      <p class="hero-tagline">An intelligent, privacy-first computer vision trainer that monitors yoga postures in real time, provides live skeleton alignment feedback, and tracks holding duration directly inside the web browser.</p>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-label">Presented By</span>
+          <span class="meta-val">Bhargav & Team</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Framework</span>
+          <span class="meta-val">React + MoveNet + TF.js</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Repository</span>
+          <span class="meta-val">bhargav-maker/yoga-ai</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <div class="tag">The Problem Statement</div>
+      <h2 class="slide-title">Why AI-Powered Yoga Assistance?</h2>
+      <p class="slide-subtitle">Traditional home yoga practice lacks critical real-time posture validation.</p>
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid #ef4444;">
+            <div class="card-icon">⚠️</div>
+            <h3 class="card-title">Risk of Injury</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Incorrect joint angles and spine curvature cause chronic strain.</li>
+                <li>Practitioners cannot look in a mirror while balancing or twisting.</li>
+                <li>Lack of posture feedback ingrains bad habits into muscle memory.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #f59e0b;">
+            <div class="card-icon">💸</div>
+            <h3 class="card-title">Trainer Inaccessibility</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Certified 1-on-1 yoga instructors are expensive and hard to schedule.</li>
+                <li>Static videos (YouTube) offer zero interactive correction.</li>
+                <li>Over 70% of fitness beginners drop out without guided accountability.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <div class="card-icon">🔒</div>
+            <h3 class="card-title">Privacy & Cloud Lag</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Cloud-based computer vision services stream live video to external servers.</li>
+                <li>Cloud network latency (300ms+) causes choppy, delayed feedback.</li>
+                <li>Users demand complete camera privacy in home workout spaces.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <div class="tag">The Solution</div>
+      <h2 class="slide-title">Introducing Yoga AI (Poddar Yogis)</h2>
+      <p class="slide-subtitle">A high-precision, 100% on-device AI system that coaches users in real time.</p>
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <div class="card-icon">⚡</div>
+            <h3 class="card-title">Real-Time MoveNet Keypoint Tracking</h3>
+            <p class="card-desc">Extracts 17 skeletal landmarks (shoulders, elbows, knees, ankles) at a butter-smooth 30–60 FPS. Uses dynamic aspect-ratio canvas scaling to overlay the skeleton precisely on the user's body.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <div class="card-icon">🛡️</div>
+            <h3 class="card-title">100% Client-Side Privacy</h3>
+            <p class="card-desc">All machine learning inference executes locally in the web browser using WebGL and TensorFlow.js. Zero video frames leave the device, ensuring total privacy and instantaneous feedback.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #a855f7;">
+            <div class="card-icon">🧠</div>
+            <h3 class="card-title">Custom Pose Classification DNN</h3>
+            <p class="card-desc">A deep neural network evaluates normalized 34-dimensional feature vectors to verify if the user's posture matches targeted classical yoga asanas with high confidence thresholding.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #ec4899;">
+            <div class="card-icon">⏱️</div>
+            <h3 class="card-title">Hold-Streak Timer & Sound Cues</h3>
+            <p class="card-desc">Gamified posture holding: the timer increments only while the correct pose is sustained, accompanied by audible milestone chimes and personal best records.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide">
+      <div class="tag">Engineering Pipeline</div>
+      <h2 class="slide-title">System Architecture</h2>
+      <p class="slide-subtitle">How frames travel from the webcam sensor to real-time feedback in milliseconds.</p>
+      <div class="content-area">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Live Video Ingestion</h4>
+            <p>React-Webcam streams 640×480 video frames at 30+ FPS into an HTML5 memory buffer.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>MoveNet Lightning Detection</h4>
+            <p>TensorFlow.js extracts 17 spatial coordinates [x, y, confidence] across the full human body.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Bounding Box Normalization</h4>
+            <p>Transforms raw pixel coordinates into scale-invariant 34-dimensional feature vectors (distance independent).</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Custom Classifier Inference</h4>
+            <p>Deep neural network computes class probabilities across 7 asanas with confidence thresholding (>0.85).</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Interactive Skeleton & Audio Feedback</h4>
+            <p>Renders real-time joint-to-joint lines on synchronized canvas; increments pose hold timer with audio chime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide">
+      <div class="tag">Curated Poses</div>
+      <h2 class="slide-title">7 Supported Classical Asanas</h2>
+      <p class="slide-subtitle">Carefully selected to train balance, upper body, spine, and lower extremities.</p>
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card">
+            <h3 class="card-title">🌳 Tree Pose (Vrikshasana)</h3>
+            <p class="card-desc">Trains neuromuscular coordination, ankle stabilization, and hip opener balance.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">🪑 Chair Pose (Utkatasana)</h3>
+            <p class="card-desc">Strengthens quadriceps, glutes, spine alignment, and stimulates abdominal organs.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">🐍 Cobra Pose (Bhujangasana)</h3>
+            <p class="card-desc">Promotes deep thoracic spine flexibility, opens chest, and tones shoulder girdle.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">⚔️ Warrior Pose (Virabhadrasana)</h3>
+            <p class="card-desc">Develops leg stamina, core stability, focus, and hip flexor mobility.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide">
+      <div class="tag">Tech Stack</div>
+      <h2 class="slide-title">Technology & Engineering Stack</h2>
+      <p class="slide-subtitle">Modern web technologies combined with browser-native machine learning.</p>
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">⚛️</div>
+            <h3 class="card-title">Frontend Engine</h3>
+            <div class="card-desc">
+              <ul>
+                <li>React 18 Single-Page Architecture</li>
+                <li>HTML5 Dynamic Resolution Canvas</li>
+                <li>React Webcam feed integration</li>
+                <li>Web Audio API sound synthesizers</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🤖</div>
+            <h3 class="card-title">AI & Vision</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Google MoveNet Lightning</li>
+                <li>TensorFlow.js WebGL Acceleration</li>
+                <li>Local offline model weights (.bin)</li>
+                <li>Python & Keras training pipeline</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🚀</div>
+            <h3 class="card-title">Deployment</h3>
+            <div class="card-desc">
+              <ul>
+                <li>One-Click Launcher (start.bat / yoga.bat)</li>
+                <li>Instant Production Server (npx / Node)</li>
+                <li>Git Version Control on GitHub</li>
+                <li>Cross-Platform Browser Support</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide">
+      <div class="tag">Innovation Ahead</div>
+      <h2 class="slide-title">Future Scope & Enhancements</h2>
+      <p class="slide-subtitle">Where we are taking Yoga AI in subsequent development cycles.</p>
+      <div class="content-area">
+        <div class="grid-2">
+          <div class="card">
+            <h3 class="card-title">📐 Real-Time Joint Angle Guidance</h3>
+            <p class="card-desc">Calculate exact geometric angles between limb vectors (e.g., knee bend at 90°) with visual red/green guidance showing which body part needs correction.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">🎙️ Generative AI Voice Coach</h3>
+            <p class="card-desc">Hands-free coaching via speech: "Straighten your left arm", "Breathe deeply", eliminating the need to look at the screen while holding inversion postures.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">📱 Mobile PWA & Wearables Integration</h3>
+            <p class="card-desc">Progressive Web App installation on smartphones and syncing with smartwatches to track heart rate, burned calories, and stress level recovery.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">👥 Multi-Person Class Mode</h3>
+            <p class="card-desc">MoveNet MultiPose tracking for group classes, leaderboards, interactive competitions, and yoga studio teacher dashboards.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide hero-slide">
+      <div class="tag">Exhibition Demonstration</div>
+      <h1 class="hero-title">Thank You!</h1>
+      <p class="hero-tagline">Yoga AI brings personal, private, and intelligent wellness coaching to everyone with a simple webcam.</p>
+      
+      <div class="pipeline-step" style="width: 100%; max-width: 800px; margin-top: 10px;">
+        <div class="step-num" style="background: #0ea5e9;">🎯</div>
+        <div class="step-content">
+          <h4>Live Exhibition Demo Available Now!</h4>
+          <p>Running locally at: <strong>http://localhost:3000</strong> | Open-source at: <strong>https://github.com/bhargav-maker/yoga-ai</strong></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <button class="nav-btn" id="prevBtn" title="Previous (Left Arrow)">❮</button>
+    <div class="progress-dots" id="dotsContainer"></div>
+    <button class="nav-btn" id="nextBtn" title="Next (Right Arrow / Space)">❯</button>
+    <span class="fs-hint">💡 Use <strong>← / →</strong> or <strong>Space</strong> to navigate. Press <strong>F11</strong> for Fullscreen!</span>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    // Create dots
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlide() {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === currentIndex);
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle('active', i === currentIndex);
+      });
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        currentIndex++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(idx) {
+      currentIndex = idx;
+      updateSlide();
+    }
+
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>
