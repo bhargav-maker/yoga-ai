@@ -129,6 +129,7 @@ function Yoga() {
         countAudioRef.current.currentTime = 0
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const detectPose = useCallback(async (detector, poseClassifier, countAudio) => {
