@@ -142,59 +142,66 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      overflow-y: auto;
+      max-height: calc(84vh - 120px);
+      padding-right: 6px;
     }
 
     /* Grid Layouts */
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      height: 100%;
+      gap: 20px;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
-      height: 100%;
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 20px;
-      padding: 26px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 20px 24px;
       display: flex;
       flex-direction: column;
       transition: transform 0.3s ease, border-color 0.3s ease;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
     .card-icon {
-      font-size: 32px;
-      margin-bottom: 14px;
+      font-size: 26px;
+      margin-bottom: 8px;
     }
 
     .card-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .card-desc {
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 13.5px;
+      line-height: 1.55;
       color: var(--text-muted);
     }
 
     .card-desc li {
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       margin-left: 18px;
     }
 
@@ -207,22 +214,22 @@
 
     .hero-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 58px;
+      font-size: 54px;
       font-weight: 800;
       line-height: 1.1;
       letter-spacing: -0.03em;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       background: linear-gradient(135deg, #ffffff 30%, #38bdf8 70%, #10b981 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero-tagline {
-      font-size: 22px;
+      font-size: 20px;
       color: var(--text-muted);
-      max-width: 800px;
+      max-width: 850px;
       line-height: 1.5;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
 
     .hero-meta {
@@ -246,7 +253,7 @@
     }
 
     .meta-val {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #fff;
     }
@@ -255,43 +262,43 @@
     .pipeline-step {
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 16px 20px;
+      gap: 18px;
+      padding: 12px 18px;
       background: rgba(15, 23, 42, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      margin-bottom: 12px;
+      border-radius: 14px;
+      margin-bottom: 10px;
     }
 
     .step-num {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
       background: var(--primary);
       color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 18px;
+      font-size: 16px;
       flex-shrink: 0;
     }
 
     .step-content h4 {
-      font-size: 17px;
+      font-size: 15.5px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .step-content p {
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-muted);
     }
 
     /* Navigation Bar */
     .controls-bar {
-      margin-top: 24px;
+      margin-top: 20px;
       display: flex;
       align-items: center;
       gap: 20px;
@@ -302,14 +309,14 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #fff;
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 18px;
       transition: all 0.2s ease;
     }
 
@@ -322,12 +329,12 @@
 
     .progress-dots {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 100px;
       background: rgba(255, 255, 255, 0.2);
       transition: all 0.3s ease;
@@ -335,7 +342,7 @@
     }
 
     .dot.active {
-      width: 32px;
+      width: 26px;
       background: var(--primary);
     }
 
@@ -355,17 +362,17 @@
 
     <!-- SLIDE 1 -->
     <div class="slide hero-slide active">
-      <div class="tag">AI & Healthcare Innovation • 2026</div>
+      <div class="tag">🏆 Sub-Divisional 1st Place Winner → Advancing to District Level</div>
       <h1 class="hero-title">Yoga AI: Poddar Yogis</h1>
-      <p class="hero-tagline">An intelligent, privacy-first computer vision trainer that monitors yoga postures in real time, provides live skeleton alignment feedback, and tracks holding duration directly inside the web browser.</p>
+      <p class="hero-tagline">Clinical-Grade Biomechanical Posture Coach & Private On-Device AI Trainer. MoveNet landmark estimation, anti-cheating kinematic gates, and 100% in-browser offline analytics.</p>
       <div class="hero-meta">
         <div class="meta-item">
-          <span class="meta-label">Presented By</span>
-          <span class="meta-val">Bhargav & Team</span>
+          <span class="meta-label">Team & Lead</span>
+          <span class="meta-val">Poddar Yogis • Bhargav</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Framework</span>
-          <span class="meta-val">React + MoveNet + TF.js</span>
+          <span class="meta-label">Frameworks</span>
+          <span class="meta-val">React 18 + TF.js + MoveNet + IndexedDB</span>
         </div>
         <div class="meta-item">
           <span class="meta-label">Repository</span>
@@ -376,41 +383,38 @@
 
     <!-- SLIDE 2 -->
     <div class="slide">
-      <div class="tag">The Problem Statement</div>
-      <h2 class="slide-title">Why AI-Powered Yoga Assistance?</h2>
-      <p class="slide-subtitle">Traditional home yoga practice lacks critical real-time posture validation.</p>
+      <div class="tag">Exhibition Agenda</div>
+      <h2 class="slide-title">Table of Contents</h2>
+      <p class="slide-subtitle">Complete exhibition overview: clinical biomechanics, engineering, and live defenses.</p>
       <div class="content-area">
-        <div class="grid-3">
-          <div class="card" style="border-top: 3px solid #ef4444;">
-            <div class="card-icon">⚠️</div>
-            <h3 class="card-title">Risk of Injury</h3>
+        <div class="grid-2">
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">📋 Part I: Clinical Biomechanics & Core Innovations</h3>
             <div class="card-desc">
               <ul>
-                <li>Incorrect joint angles and spine curvature cause chronic strain.</li>
-                <li>Practitioners cannot look in a mirror while balancing or twisting.</li>
-                <li>Lack of posture feedback ingrains bad habits into muscle memory.</li>
+                <li><strong>01.</strong> The Problem: Hidden Dangers of Solitary Yoga</li>
+                <li><strong>02.</strong> The 8 User-Tested Clinical Breakthroughs</li>
+                <li><strong>03.</strong> Dual-Engine Anti-Cheating Architecture</li>
+                <li><strong>04.</strong> Mathematical Formulations & Biomechanics</li>
+                <li><strong>05.</strong> 7 Supported Asanas & Kinematic Profiles</li>
+                <li><strong>06.</strong> Injury Prevention: Hyperextension & Tilt Alerts</li>
+                <li><strong>07.</strong> Micro-Movement Balance & True Stillness</li>
+                <li><strong>08.</strong> Restored Clean Studio UI & Ergonomics</li>
               </ul>
             </div>
           </div>
-          <div class="card" style="border-top: 3px solid #f59e0b;">
-            <div class="card-icon">💸</div>
-            <h3 class="card-title">Trainer Inaccessibility</h3>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">🎯 Part II: Engineering, Analytics & Demonstration</h3>
             <div class="card-desc">
               <ul>
-                <li>Certified 1-on-1 yoga instructors are expensive and hard to schedule.</li>
-                <li>Static videos (YouTube) offer zero interactive correction.</li>
-                <li>Over 70% of fitness beginners drop out without guided accountability.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="card" style="border-top: 3px solid #0ea5e9;">
-            <div class="card-icon">🔒</div>
-            <h3 class="card-title">Privacy & Cloud Lag</h3>
-            <div class="card-desc">
-              <ul>
-                <li>Cloud-based computer vision services stream live video to external servers.</li>
-                <li>Cloud network latency (300ms+) causes choppy, delayed feedback.</li>
-                <li>Users demand complete camera privacy in home workout spaces.</li>
+                <li><strong>09.</strong> 10-Second Auto-Closing Diagnostic Scorecard</li>
+                <li><strong>10.</strong> IndexedDB Analytics Dashboard (/progress)</li>
+                <li><strong>11.</strong> Deep Neural Network Classifier & Pipeline</li>
+                <li><strong>12.</strong> System Architecture & Standalone Offline Run</li>
+                <li><strong>13.</strong> Competitive Matrix: Yoga AI vs Alternatives</li>
+                <li><strong>14.</strong> District Competition Defense & Judge FAQ</li>
+                <li><strong>15.</strong> Future Roadmap & National Health Impact</li>
+                <li><strong>16.</strong> Winning 3-Step Live Demonstration Script</li>
               </ul>
             </div>
           </div>
@@ -420,30 +424,50 @@
 
     <!-- SLIDE 3 -->
     <div class="slide">
-      <div class="tag">The Solution</div>
-      <h2 class="slide-title">Introducing Yoga AI (Poddar Yogis)</h2>
-      <p class="slide-subtitle">A high-precision, 100% on-device AI system that coaches users in real time.</p>
+      <div class="tag">The Problem Statement</div>
+      <h2 class="slide-title">The Hidden Dangers of Solitary Yoga</h2>
+      <p class="slide-subtitle">Solitary home practice lacks crucial real-time posture validation and creates injury risks.</p>
       <div class="content-area">
-        <div class="grid-2">
-          <div class="card" style="border-left: 3px solid #10b981;">
-            <div class="card-icon">⚡</div>
-            <h3 class="card-title">Real-Time MoveNet Keypoint Tracking</h3>
-            <p class="card-desc">Extracts 17 skeletal landmarks (shoulders, elbows, knees, ankles) at a butter-smooth 30–60 FPS. Uses dynamic aspect-ratio canvas scaling to overlay the skeleton precisely on the user's body.</p>
+        <div class="grid-4">
+          <div class="card" style="border-top: 3px solid #ef4444;">
+            <h3 class="card-title" style="color: #ef4444;">⚠️ High Injury Rates</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Over 60% of solitary practitioners sustain lower back, neck, or sacroiliac strain.</li>
+                <li>Cannot look into a mirror while balancing or twisting without risking cervical sprains.</li>
+                <li>Uncorrected errors become deeply ingrained faulty muscle memory.</li>
+              </ul>
+            </div>
           </div>
-          <div class="card" style="border-left: 3px solid #0ea5e9;">
-            <div class="card-icon">🛡️</div>
-            <h3 class="card-title">100% Client-Side Privacy</h3>
-            <p class="card-desc">All machine learning inference executes locally in the web browser using WebGL and TensorFlow.js. Zero video frames leave the device, ensuring total privacy and instantaneous feedback.</p>
+          <div class="card" style="border-top: 3px solid #f59e0b;">
+            <h3 class="card-title" style="color: #f59e0b;">💸 Financial Inaccessibility</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Personal certified yoga instructors charge $50–$100/hr, unaffordable for most families.</li>
+                <li>Rural schools and community centers lack access to certified yoga coaches.</li>
+                <li>Over 70% of fitness beginners drop out within 4 weeks due to lack of feedback.</li>
+              </ul>
+            </div>
           </div>
-          <div class="card" style="border-left: 3px solid #a855f7;">
-            <div class="card-icon">🧠</div>
-            <h3 class="card-title">Custom Pose Classification DNN</h3>
-            <p class="card-desc">A deep neural network evaluates normalized 34-dimensional feature vectors to verify if the user's posture matches targeted classical yoga asanas with high confidence thresholding.</p>
+          <div class="card" style="border-top: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">🔒 Privacy Violations & Cloud Lag</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Commercial fitness apps stream private home camera feeds to remote cloud servers.</li>
+                <li>300ms–800ms cloud network latency causes choppy, delayed posture corrections.</li>
+                <li>Fails completely in exhibition halls, basements, and rural venues without Wi-Fi.</li>
+              </ul>
+            </div>
           </div>
-          <div class="card" style="border-left: 3px solid #ec4899;">
-            <div class="card-icon">⏱️</div>
-            <h3 class="card-title">Hold-Streak Timer & Sound Cues</h3>
-            <p class="card-desc">Gamified posture holding: the timer increments only while the correct pose is sustained, accompanied by audible milestone chimes and personal best records.</p>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">📺 The Flaw of Static Videos</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Recorded YouTube videos offer zero interactive correction or form validation.</li>
+                <li>Users unknowingly cheat poses (unjoined hands, dangling legs, hyperextended knees).</li>
+                <li>Gives a false illusion of accomplishment while posture causes orthopedic harm.</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -451,43 +475,42 @@
 
     <!-- SLIDE 4 -->
     <div class="slide">
-      <div class="tag">Engineering Pipeline</div>
-      <h2 class="slide-title">System Architecture</h2>
-      <p class="slide-subtitle">How frames travel from the webcam sensor to real-time feedback in milliseconds.</p>
+      <div class="tag">Real-World Testing Discovery</div>
+      <h2 class="slide-title">The 8 User-Tested Clinical Breakthroughs</h2>
+      <p class="slide-subtitle">Direct solutions to critical edge cases discovered during real-world user testing.</p>
       <div class="content-area">
-        <div class="pipeline-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h4>Live Video Ingestion</h4>
-            <p>React-Webcam streams 640×480 video frames at 30+ FPS into an HTML5 memory buffer.</p>
+        <div class="grid-4">
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">1. Unjoined Hands Cheating</h3>
+            <p class="card-desc">Separated hands previously scored as correct Tree Pose. Fixed via wrist proximity (&lt;15% torso length) prayer check.</p>
           </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h4>MoveNet Lightning Detection</h4>
-            <p>TensorFlow.js extracts 17 spatial coordinates [x, y, confidence] across the full human body.</p>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">2. Leg Cheating &amp; Angle Gates</h3>
+            <p class="card-desc">Legs kicked back or floating in mid-air were passing. Fixed with standing leg (&gt;150°) &amp; elevated foot check.</p>
           </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h4>Bounding Box Normalization</h4>
-            <p>Transforms raw pixel coordinates into scale-invariant 34-dimensional feature vectors (distance independent).</p>
+          <div class="card" style="border-left: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">3. Broken Skeleton Anatomy</h3>
+            <p class="card-desc">Leg was detached from hip. Fixed by mapping explicit anatomical connections (hips to knees, knees to ankles).</p>
           </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <h4>Custom Classifier Inference</h4>
-            <p>Deep neural network computes class probabilities across 7 asanas with confidence thresholding (>0.85).</p>
+          <div class="card" style="border-left: 3px solid #f59e0b;">
+            <h3 class="card-title" style="color: #f59e0b;">4. Restored Clean Studio UI</h3>
+            <p class="card-desc">Removed glitched chest breathing aura and cluttering badges. Restored pristine original camera studio UI.</p>
           </div>
-        </div>
-        <div class="pipeline-step">
-          <div class="step-num">5</div>
-          <div class="step-content">
-            <h4>Interactive Skeleton & Audio Feedback</h4>
-            <p>Renders real-time joint-to-joint lines on synchronized canvas; increments pose hold timer with audio chime.</p>
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">5. Dual-Engine Processing Speed</h3>
+            <p class="card-desc">Combined MoveNet Lightning with WebGL GPU acceleration for instantaneous 30-60 FPS sub-15ms inference.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #ef4444;">
+            <h3 class="card-title" style="color: #ef4444;">6. False Stillness Elimination</h3>
+            <p class="card-desc">Stillness was reporting even when not doing yoga. Fixed: spatial variance ONLY tracks during active pose.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">7. 10s Auto-Closing Scorecard</h3>
+            <p class="card-desc">Pop-up appears on stop: counts down 10s with progress bar, pauses on touch/hover, auto-saves to IndexedDB.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">8. Full Vertical Scrolling &amp; Chart</h3>
+            <p class="card-desc">Fixed viewport trap on /progress: smooth scrolling, interactive SVG trend chart, &amp; JSON export for judges.</p>
           </div>
         </div>
       </div>
@@ -495,71 +518,52 @@
 
     <!-- SLIDE 5 -->
     <div class="slide">
-      <div class="tag">Curated Poses</div>
-      <h2 class="slide-title">7 Supported Classical Asanas</h2>
-      <p class="slide-subtitle">Carefully selected to train balance, upper body, spine, and lower extremities.</p>
+      <div class="tag">Mathematical Foundations</div>
+      <h2 class="slide-title">Mathematical &amp; Biomechanical Calculations</h2>
+      <p class="slide-subtitle">Rigorous geometry and spatial variance algorithms driving live posture validation.</p>
       <div class="content-area">
-        <div class="grid-2">
-          <div class="card">
-            <h3 class="card-title">🌳 Tree Pose (Vrikshasana)</h3>
-            <p class="card-desc">Trains neuromuscular coordination, ankle stabilization, and hip opener balance.</p>
-          </div>
-          <div class="card">
-            <h3 class="card-title">🪑 Chair Pose (Utkatasana)</h3>
-            <p class="card-desc">Strengthens quadriceps, glutes, spine alignment, and stimulates abdominal organs.</p>
-          </div>
-          <div class="card">
-            <h3 class="card-title">🐍 Cobra Pose (Bhujangasana)</h3>
-            <p class="card-desc">Promotes deep thoracic spine flexibility, opens chest, and tones shoulder girdle.</p>
-          </div>
-          <div class="card">
-            <h3 class="card-title">⚔️ Warrior Pose (Virabhadrasana)</h3>
-            <p class="card-desc">Develops leg stamina, core stability, focus, and hip flexor mobility.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SLIDE 6 -->
-    <div class="slide">
-      <div class="tag">Tech Stack</div>
-      <h2 class="slide-title">Technology & Engineering Stack</h2>
-      <p class="slide-subtitle">Modern web technologies combined with browser-native machine learning.</p>
-      <div class="content-area">
-        <div class="grid-3">
-          <div class="card">
-            <div class="card-icon">⚛️</div>
-            <h3 class="card-title">Frontend Engine</h3>
+        <div class="grid-4">
+          <div class="card" style="border-top: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">📐 Joint Angle Vector Formulation</h3>
             <div class="card-desc">
               <ul>
-                <li>React 18 Single-Page Architecture</li>
-                <li>HTML5 Dynamic Resolution Canvas</li>
-                <li>React Webcam feed integration</li>
-                <li>Web Audio API sound synthesizers</li>
+                <li>Calculates 2D joint angle θ at vertex B formed by limbs BA and BC:</li>
+                <li><code>θ = arccos( (u • v) / (||u|| * ||v||) )</code></li>
+                <li>where <code>u = A - B</code> and <code>v = C - B</code> in normalized coordinates.</li>
+                <li>Evaluates elbow flexion, knee flexion, hip abduction, and shoulder elevation.</li>
               </ul>
             </div>
           </div>
-          <div class="card">
-            <div class="card-icon">🤖</div>
-            <h3 class="card-title">AI & Vision</h3>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">🌊 EMA Keypoint Jitter Smoothing</h3>
             <div class="card-desc">
               <ul>
-                <li>Google MoveNet Lightning</li>
-                <li>TensorFlow.js WebGL Acceleration</li>
-                <li>Local offline model weights (.bin)</li>
-                <li>Python & Keras training pipeline</li>
+                <li>Eliminates high-frequency sensor noise via Exponential Moving Average:</li>
+                <li><code>S(t) = α * Y(t) + (1 - α) * S(t-1)</code> with <code>α = 0.65</code></li>
+                <li>Maintains ultra-smooth joint positions without perceptible lag.</li>
+                <li>Prevents false angle fluctuation during stationary balance holding.</li>
               </ul>
             </div>
           </div>
-          <div class="card">
-            <div class="card-icon">🚀</div>
-            <h3 class="card-title">Deployment</h3>
+          <div class="card" style="border-top: 3px solid #f59e0b;">
+            <h3 class="card-title" style="color: #f59e0b;">⚖️ CoG Spatial Variance for Stillness</h3>
             <div class="card-desc">
               <ul>
-                <li>One-Click Launcher (start.bat / yoga.bat)</li>
-                <li>Instant Production Server (npx / Node)</li>
-                <li>Git Version Control on GitHub</li>
-                <li>Cross-Platform Browser Support</li>
+                <li>Quantifies postural stability across a 15-frame sliding window:</li>
+                <li><code>σ² = (1/N) * Σ ||CoG(i) - mean(CoG)||²</code></li>
+                <li>Threshold: If <code>σ² > ε</code>, user is wobbling; hold timer pauses immediately.</li>
+                <li>Only activates when person is detected AND actively performing pose.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">📏 Scale &amp; Distance Invariance</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Normalizes coordinate space relative to practitioner's physical torso size:</li>
+                <li><code>Torso Length = ||Shoulders_Center - Hips_Center||</code></li>
+                <li>All distance gates (e.g. wrist proximity &lt;15% torso) scale dynamically.</li>
+                <li>Guarantees identical performance whether user stands 1.5m or 3.5m away.</li>
               </ul>
             </div>
           </div>
@@ -569,42 +573,209 @@
 
     <!-- SLIDE 7 -->
     <div class="slide">
-      <div class="tag">Innovation Ahead</div>
-      <h2 class="slide-title">Future Scope & Enhancements</h2>
-      <p class="slide-subtitle">Where we are taking Yoga AI in subsequent development cycles.</p>
+      <div class="tag">Asana Library</div>
+      <h2 class="slide-title">7 Supported Classical Asanas</h2>
+      <p class="slide-subtitle">Comprehensive kinematic specifications covering balance, flexibility, and core strength.</p>
       <div class="content-area">
-        <div class="grid-2">
-          <div class="card">
-            <h3 class="card-title">📐 Real-Time Joint Angle Guidance</h3>
-            <p class="card-desc">Calculate exact geometric angles between limb vectors (e.g., knee bend at 90°) with visual red/green guidance showing which body part needs correction.</p>
+        <div class="grid-4">
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <h3 class="card-title">🌳 Tree Pose (Vrikshasana)</h3>
+            <p class="card-desc">Wrists prayer &lt;15% torso length; standing leg straight (&gt;150°); folded foot elevated near knee off ground.</p>
           </div>
-          <div class="card">
-            <h3 class="card-title">🎙️ Generative AI Voice Coach</h3>
-            <p class="card-desc">Hands-free coaching via speech: "Straighten your left arm", "Breathe deeply", eliminating the need to look at the screen while holding inversion postures.</p>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <h3 class="card-title">🪑 Chair Pose (Utkatasana)</h3>
+            <p class="card-desc">Bilateral knees flexed parallel between 75° and 140°; arms extended overhead above shoulder plane.</p>
           </div>
-          <div class="card">
-            <h3 class="card-title">📱 Mobile PWA & Wearables Integration</h3>
-            <p class="card-desc">Progressive Web App installation on smartphones and syncing with smartwatches to track heart rate, burned calories, and stress level recovery.</p>
+          <div class="card" style="border-left: 3px solid #f59e0b;">
+            <h3 class="card-title">⚔️ Warrior Pose (Virabhadrasana)</h3>
+            <p class="card-desc">Asymmetric lunge: front knee bent (75°-130°), rear leg extended (&gt;140°); torso centered over pelvis.</p>
           </div>
-          <div class="card">
-            <h3 class="card-title">👥 Multi-Person Class Mode</h3>
-            <p class="card-desc">MoveNet MultiPose tracking for group classes, leaderboards, interactive competitions, and yoga studio teacher dashboards.</p>
+          <div class="card" style="border-left: 3px solid #a855f7;">
+            <h3 class="card-title">🐕 Downward Dog (Adho Mukha)</h3>
+            <p class="card-desc">Inverted 'V' shape: hips apex at highest point; arms and hamstrings lengthened with soft micro-bend.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #10b981;">
+            <h3 class="card-title">🐍 Cobra Pose (Bhujangasana)</h3>
+            <p class="card-desc">Thoracic spine extension: chest lifted &gt;20° from floor; soft elbows (avoid locked joints) to protect spine.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #0ea5e9;">
+            <h3 class="card-title">🤸 Shoulderstand (Sarvangasana)</h3>
+            <p class="card-desc">Full body inversion: vertical trunk column; hips stacked squarely over shoulders with core engagement.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #f59e0b;">
+            <h3 class="card-title">📐 Triangle Pose (Trikonasana)</h3>
+            <p class="card-desc">Lateral spinal hinge: arms aligned in vertical 180° vector; leading knee protected against hyperextension.</p>
+          </div>
+          <div class="card" style="border-left: 3px solid #a855f7;">
+            <h3 class="card-title">🧘 Negative 'No Pose' Class</h3>
+            <p class="card-desc">Filters out standing, walking, stretching, or seated adjustments so idle postures never earn score.</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- SLIDE 8 -->
+    <div class="slide">
+      <div class="tag">Clinical Safety</div>
+      <h2 class="slide-title">Injury Prevention: Hyperextension &amp; Symmetry</h2>
+      <p class="slide-subtitle">Active orthopedic guards protect ligaments, joint capsules, and spinal alignment.</p>
+      <div class="content-area">
+        <div class="grid-4">
+          <div class="card" style="border-top: 3px solid #ef4444;">
+            <h3 class="card-title" style="color: #ef4444;">🛑 Hyperextension Protection</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Models anatomical range-of-motion limits for hinge joints (knees and elbows).</li>
+                <li>Reverse-deflection angles (&gt;177°) immediately flag as hyperextension risks.</li>
+                <li>Visual Alert: Failing joint turns bright pulsing red on the skeleton canvas.</li>
+                <li>Spoken Guidance: Voice cautions: 'Softly bend your knee — avoid locking the joint'.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">📐 Relative Slope Symmetry</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Computes vector slopes of shoulder line (Δy/Δx) versus hip line relative to ground.</li>
+                <li>Detects pelvic tilt, hip drop, and asymmetric shoulder hiking (&gt;12° divergence).</li>
+                <li>Catches compensatory strain before it becomes chronic lower-back pain.</li>
+                <li>Spoken guidance instructs practitioner to square hips and level shoulders.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">🗣️ Prioritized Spoken Voice Coach</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Built with native browser SpeechSynthesis API (100% offline, zero server cost).</li>
+                <li>Kinematic Hierarchy: Corrects spinal curvature before elbow/wrist placement.</li>
+                <li>Anti-Overlap Cooldown: Enforces 4.5s cooldown so it never talks over itself.</li>
+                <li>Enables eyes-free yoga practice during balancing and inversion postures.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">🩺 Posture Recovery &amp; Physical Therapy</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Scorecard generates targeted physical therapy tips based on detected faults.</li>
+                <li>Suggests hamstring stretches for tight Downward Dog, or calf mobility for Tree Pose.</li>
+                <li>Transforms casual practice into clinical, restorative rehabilitation.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide">
+      <div class="tag">Offline Persistence</div>
+      <h2 class="slide-title">IndexedDB Analytics &amp; Natural Scrolling (/progress)</h2>
+      <p class="slide-subtitle">Private local data storage, dynamic SVG visualization, and one-click JSON export.</p>
+      <div class="content-area">
+        <div class="grid-3">
+          <div class="card" style="border-top: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">🗄️ 100% Offline Client Database</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Utilizes browser IndexedDB ('YogaAIDB', store 'sessions').</li>
+                <li>Zero external cloud database subscriptions or maintenance costs.</li>
+                <li>Stores years of complete workout telemetry locally on the machine.</li>
+                <li>Guarantees 100% data privacy: biometric records never leave the user's laptop.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">📈 Interactive SVG Performance Trend</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Dynamic SVG visualization plotting score trajectories across sessions.</li>
+                <li>Dual visualization: Interactive trend line and historical session bar graph.</li>
+                <li>Visual markers for high-water marks and personal bests.</li>
+                <li>Natural vertical scrolling restored without viewport trapping.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">📥 One-Click JSON Report Export</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Judges and doctors can click 'Export JSON Report 📥'.</li>
+                <li>Exports full raw chronological session dataset as formatted JSON.</li>
+                <li>Enables physical therapy audit and clinical progress tracking.</li>
+                <li>Clear History button allows testing resets during exhibition.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 16 -->
+    <div class="slide">
+      <div class="tag">Competition Defense</div>
+      <h2 class="slide-title">District Competition: Key Judge Defenses &amp; FAQ</h2>
+      <p class="slide-subtitle">Anticipated questions from technical and clinical judges with verifiable defenses.</p>
+      <div class="content-area">
+        <div class="grid-4">
+          <div class="card" style="border-top: 3px solid #10b981;">
+            <h3 class="card-title" style="color: #10b981;">Q: How do you prevent cheating?</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Dual-Engine Verification: Neural network confidence is cross-checked with geometric distance &amp; angle bounds.</li>
+                <li>Hands must be joined (&lt;15% torso length); folded foot must be elevated off the ground.</li>
+                <li>Legs kicked back or floating in the air are strictly rejected.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #0ea5e9;">
+            <h3 class="card-title" style="color: #0ea5e9;">Q: Why on-device over Cloud APIs?</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Zero latency (30-60 FPS) ensures immediate real-time biofeedback.</li>
+                <li>100% biometric privacy: no camera frames or coordinates ever leave the machine.</li>
+                <li>Operates in venues with zero Wi-Fi or cellular connection.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #ef4444;">
+            <h3 class="card-title" style="color: #ef4444;">Q: How does AI protect joints?</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Models anatomical range-of-motion limits for hinge joints (knees, elbows).</li>
+                <li>Detects hyperextension reverse-deflection (&gt;177°) and flags joints in bright red.</li>
+                <li>Voice coach prompts users to soften their knees and avoid ligament locking.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card" style="border-top: 3px solid #a855f7;">
+            <h3 class="card-title" style="color: #a855f7;">Q: How are practice records stored?</h3>
+            <div class="card-desc">
+              <ul>
+                <li>Browser IndexedDB stores practice sessions with zero cloud database fees.</li>
+                <li>10-second auto-closing modal auto-saves telemetry even if untouched.</li>
+                <li>Full session history can be exported as standard JSON for doctor/judge review.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 18 -->
     <div class="slide hero-slide">
-      <div class="tag">Exhibition Demonstration</div>
-      <h1 class="hero-title">Thank You!</h1>
-      <p class="hero-tagline">Yoga AI brings personal, private, and intelligent wellness coaching to everyone with a simple webcam.</p>
+      <div class="tag">Live Exhibition Demonstration</div>
+      <h1 class="hero-title" style="font-size: 42px;">Thank You! Ready for Live Demo 🧘‍♂️</h1>
+      <p class="hero-tagline" style="font-size: 18px; margin-bottom: 20px;">Yoga AI: Poddar Yogis • Setting the Clinical Standard for Wellness Tech</p>
       
-      <div class="pipeline-step" style="width: 100%; max-width: 800px; margin-top: 10px;">
-        <div class="step-num" style="background: #0ea5e9;">🎯</div>
-        <div class="step-content">
-          <h4>Live Exhibition Demo Available Now!</h4>
-          <p>Running locally at: <strong>http://localhost:3000</strong> | Open-source at: <strong>https://github.com/bhargav-maker/yoga-ai</strong></p>
+      <div class="card" style="width: 100%; max-width: 950px; border-left: 3px solid #0ea5e9; padding: 20px;">
+        <h3 class="card-title" style="color: #0ea5e9; margin-bottom: 12px;">Winning Live Demonstration Workflow for Judges (3-Step Demo):</h3>
+        <div class="card-desc">
+          <p style="margin-bottom: 8px;"><strong>1. Demonstrate Anti-Cheating &amp; False-Positive Elimination:</strong> Select Tree Pose. Deliberately keep hands apart or kick leg behind back → show that the AI strictly rejects the pose and gives spoken correction.</p>
+          <p style="margin-bottom: 8px;"><strong>2. Demonstrate Real-Time Stillness &amp; Micro-Movement Gating:</strong> Join hands in prayer and elevate folded foot. Skeleton turns vibrant green, chime plays, hold timer starts. Wobble slightly → timer halts until stillness returns.</p>
+          <p style="margin-bottom: 8px;"><strong>3. Demonstrate 10s Scorecard, Natural Scrolling &amp; JSON Export:</strong> Click 'Stop Pose'. Show 10-second auto-closing modal with progress bar and hover-pause. Navigate to /progress → scroll smoothly through history, view SVG performance trend chart, and click 'Export JSON Report 📥'.</p>
+          <p style="margin-top: 10px; color: #10b981;"><strong>Live Web App:</strong> http://localhost:3000 &nbsp;|&nbsp; <strong>Open-Source:</strong> github.com/bhargav-maker/yoga-ai</p>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import Home from './Home'
 import Yoga from './Yoga'
 import About from './About'
 import Tutorials from './Tutorials'
+import Progress from './Progress'
 
 import './App.css'
 
@@ -16,6 +17,7 @@ export default function App() {
         <Route path='/start' element={<Yoga />} />
         <Route path='/about' element={<About />} />
         <Route path='/tutorials' element={<Tutorials />} />
+        <Route path='/progress' element={<Progress />} />
       </Routes>
     </Router>
   )
