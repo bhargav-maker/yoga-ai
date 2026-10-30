@@ -449,6 +449,69 @@
     margin: 0;
 }
 
+/* Small Side Correction Card (Vocal & Text feedback) */
+.side-correction-card {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.25s ease;
+}
+
+.side-correction-card.has-correction {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+}
+
+.side-correction-card.perfect-alignment {
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.1);
+}
+
+.side-correction-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.side-correction-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+.side-correction-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #e2e8f0;
+}
+
+.side-correction-card.has-correction .side-correction-title {
+    color: #fcd34d;
+}
+
+.side-correction-card.perfect-alignment .side-correction-title {
+    color: #6ee7b7;
+}
+
+.side-correction-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+.side-correction-card.has-correction .side-correction-text {
+    color: #fef08a;
+    font-weight: 600;
+}
+
 @keyframes slideUp {
     from { transform: translateY(12px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }

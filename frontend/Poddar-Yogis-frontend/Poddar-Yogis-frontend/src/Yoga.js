@@ -568,6 +568,21 @@ function Yoga() {
               </div>
             </div>
 
+            {/* Small Side Widget: Live Vocal & Text Correction Guidance */}
+            <div className={`side-correction-card ${currentCorrection ? 'has-correction' : 'perfect-alignment'}`}>
+              <div className="side-correction-header">
+                <span className="side-correction-icon">{currentCorrection ? '🎙️ ⚠️' : '✨ 🟢'}</span>
+                <span className="side-correction-title">
+                  {currentCorrection ? 'Vocal & Text Form Coach' : 'Form Aligned'}
+                </span>
+              </div>
+              <p className="side-correction-text">
+                {currentCorrection 
+                  ? currentCorrection 
+                  : 'Posture looks great! Hold steady and breathe deeply.'}
+              </p>
+            </div>
+
             <button onClick={stopPose} className="btn-stop-pose">
               Stop Pose & View Report 📋
             </button>

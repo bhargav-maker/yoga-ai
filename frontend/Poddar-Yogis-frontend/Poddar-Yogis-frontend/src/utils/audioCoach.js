@@ -42,16 +42,20 @@ class AudioCoach {
     }
 
     try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
       window.speechSynthesis.cancel(); // Stop any pending utterance
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.0;
-      utterance.pitch = 1.05;
-      utterance.volume = 0.9;
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      utterance.lang = 'en-US';
 
-      // Select an English natural voice if available
+      // Select an English voice if loaded
       const voices = window.speechSynthesis.getVoices();
       if (voices && voices.length > 0) {
-        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('David')));
         if (preferredVoice) {
           utterance.voice = preferredVoice;
         }
