@@ -19,7 +19,7 @@ export class StabilityTracker {
 
   /**
    * Updates tracker with current frame landmarks.
-   * Returns { isStable: boolean, variance: number, stabilityPercentage: number, isTracking: boolean }
+   * Returns { isStable: boolean, variance: number, stabilityPercentage: number }
    */
   update(keypoints, minScore = 0.35) {
     const lHip = keypoints[POINTS.LEFT_HIP];
@@ -27,9 +27,8 @@ export class StabilityTracker {
     const lShoulder = keypoints[POINTS.LEFT_SHOULDER];
     const rShoulder = keypoints[POINTS.RIGHT_SHOULDER];
 
-    // If core hips or shoulders are missing/not visible, we are NOT tracking stillness
     if (!lHip || !rHip || lHip.score < minScore || rHip.score < minScore) {
-      return { isStable: false, variance: 0, stabilityPercentage: 0, isTracking: false };
+      return { isStable: true, variance: 0, stabilityPercentage: 100 };
     }
 
     // Center of gravity estimate: midpoint between hips and shoulders
@@ -48,7 +47,7 @@ export class StabilityTracker {
     }
 
     if (this.history.length < 5) {
-      return { isStable: true, variance: 0, stabilityPercentage: 100, isTracking: true };
+      return { isStable: true, variance: 0, stabilityPercentage: 100 };
     }
 
     // Mean CoG position
@@ -65,13 +64,13 @@ export class StabilityTracker {
     const isStable = variance <= this.varianceThreshold;
 
     // Calculate stability percentage (0 - 100)
+    // 0 variance = 100%, threshold variance = ~60%, 3x threshold = 0%
     const stabilityPercentage = Math.max(0, Math.min(100, Math.round(100 - (variance / (this.varianceThreshold * 2.5)) * 100)));
 
     return {
       isStable,
       variance: Math.round(variance * 10) / 10,
-      stabilityPercentage,
-      isTracking: true
+      stabilityPercentage
     };
   }
 }

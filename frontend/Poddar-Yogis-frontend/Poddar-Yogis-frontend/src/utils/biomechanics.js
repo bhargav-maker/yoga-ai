@@ -1,7 +1,6 @@
 /**
  * Biomechanical Analysis & Geometric Engine for Yoga AI
- * Implements 3-point angle calculation, strict pose-specific kinematic rules
- * (preventing cheating: unjoined hands, kickbacks, air-legs),
+ * Implements 3-point angle calculation, balanced pose-specific sanity rules,
  * slope-based symmetry detection, hyperextension boundary alerts,
  * and temporal landmark EMA smoothing.
  */
@@ -24,16 +23,6 @@ export function smoothKeypoints(prevKeypoints, currentKeypoints, alpha = 0.65) {
 }
 
 /**
- * Calculates 2D Euclidean distance between two points
- */
-export function calculateDistance(a, b) {
-  if (!a || !b) return null;
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy);
-}
-
-/**
  * Calculates 2D interior angle in degrees between three points: A -> B -> C
  * B is the vertex.
  */
@@ -48,8 +37,18 @@ export function calculateAngle(a, b, c) {
 }
 
 /**
+ * Calculates 2D Euclidean distance between two points
+ */
+export function calculateDistance(a, b) {
+  if (!a || !b) return null;
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
  * Checks for hyperextension in hinge joints (knees and elbows).
- * A hinge angle pushing past ~177° towards reverse deflection indicates locked/hyperextended joints.
+ * Only alerts on genuine reverse deflection (>177°) without false alarms.
  */
 export function checkHyperextension(keypoints, minScore = 0.35) {
   const alerts = [];
@@ -65,7 +64,7 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(lHip, lKnee, lAnkle);
     if (angle !== null) {
       joints.leftKneeAngle = angle;
-      if (angle >= 177) {
+      if (angle >= 178) {
         alerts.push({
           joint: 'Left Knee',
           jointIndex: POINTS.LEFT_KNEE,
@@ -85,7 +84,7 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(rHip, rKnee, rAnkle);
     if (angle !== null) {
       joints.rightKneeAngle = angle;
-      if (angle >= 177) {
+      if (angle >= 178) {
         alerts.push({
           joint: 'Right Knee',
           jointIndex: POINTS.RIGHT_KNEE,
@@ -105,12 +104,12 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(lShoulder, lElbow, lWrist);
     if (angle !== null) {
       joints.leftElbowAngle = angle;
-      if (angle >= 178) {
+      if (angle >= 179) {
         alerts.push({
           joint: 'Left Elbow',
           jointIndex: POINTS.LEFT_ELBOW,
           angle,
-          message: 'Ease tension in left elbow — keep a micro-bend.',
+          message: 'Keep a micro-bend in left elbow.',
           severity: 'caution'
         });
       }
@@ -125,12 +124,12 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(rShoulder, rElbow, rWrist);
     if (angle !== null) {
       joints.rightElbowAngle = angle;
-      if (angle >= 178) {
+      if (angle >= 179) {
         alerts.push({
           joint: 'Right Elbow',
           jointIndex: POINTS.RIGHT_ELBOW,
           angle,
-          message: 'Ease tension in right elbow — keep a micro-bend.',
+          message: 'Keep a micro-bend in right elbow.',
           severity: 'caution'
         });
       }
@@ -158,27 +157,26 @@ export function checkSlopeSymmetry(keypoints, minScore = 0.35) {
   const hipAngle = Math.atan2(rHip.y - lHip.y, rHip.x - lHip.x) * (180 / Math.PI);
   const deltaDegrees = Math.round(Math.abs(shoulderAngle - hipAngle));
 
-  const isSymmetric = deltaDegrees <= 14;
+  const isSymmetric = deltaDegrees <= 15;
   return {
     isSymmetric,
     deltaDegrees,
     shoulderAngle: Math.round(shoulderAngle),
     hipAngle: Math.round(hipAngle),
-    warning: !isSymmetric ? `Pelvic or shoulder tilt detected (${deltaDegrees}°). Square your hips.` : null
+    warning: !isSymmetric ? `Square your shoulders and hips.` : null
   };
 }
 
 /**
- * Pose-Specific Biomechanical Evaluation
- * Strictly validates essential anatomical constraints (hands, folded legs, orientation)
- * to prevent false positives and pose cheating.
+ * Balanced Biomechanical Evaluation (Sanity checks, not robotic strictness)
+ * Ensures user isn't cheating (e.g., hands separated or leg kicked in air),
+ * but remains forgiving of minor body differences.
  */
-export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
+export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.30) {
   const p = (idx) => keypoints[idx] && keypoints[idx].score >= minScore ? keypoints[idx] : null;
   const errors = [];
-  const jointStatus = {}; // map of keypoint index -> status ('correct' | 'warning' | 'error')
+  const jointStatus = {};
 
-  // Core landmarks
   const lHip = p(POINTS.LEFT_HIP);
   const rHip = p(POINTS.RIGHT_HIP);
   const lKnee = p(POINTS.LEFT_KNEE);
@@ -192,51 +190,55 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
   const lWrist = p(POINTS.LEFT_WRIST);
   const rWrist = p(POINTS.RIGHT_WRIST);
 
-  // Torso scale reference
-  let torsoLength = 150;
-  if (lShoulder && lHip) {
-    torsoLength = calculateDistance(lShoulder, lHip) || 150;
-  } else if (rShoulder && rHip) {
-    torsoLength = calculateDistance(rShoulder, rHip) || 150;
-  }
-
   const lKneeAngle = lHip && lKnee && lAnkle ? calculateAngle(lHip, lKnee, lAnkle) : null;
   const rKneeAngle = rHip && rKnee && rAnkle ? calculateAngle(rHip, rKnee, rAnkle) : null;
   const lElbowAngle = lShoulder && lElbow && lWrist ? calculateAngle(lShoulder, lElbow, lWrist) : null;
   const rElbowAngle = rShoulder && rElbow && rWrist ? calculateAngle(rShoulder, rElbow, rWrist) : null;
 
+  // Scale reference: torso distance (shoulder midpoint to hip midpoint)
+  let torsoDist = 120;
+  if (lShoulder && rShoulder && lHip && rHip) {
+    const sMid = { x: (lShoulder.x + rShoulder.x) / 2, y: (lShoulder.y + rShoulder.y) / 2 };
+    const hMid = { x: (lHip.x + rHip.x) / 2, y: (lHip.y + rHip.y) / 2 };
+    torsoDist = calculateDistance(sMid, hMid) || 120;
+  }
+
+  // Hand proximity check (for poses requiring joined hands like Tree / Anjali Mudra)
+  const wristDist = (lWrist && rWrist) ? calculateDistance(lWrist, rWrist) : null;
+
   switch (poseName) {
     case 'Tree': {
-      // 1. SMART HANDS CHECK: Wrists must be joined or in close prayer/overhead position
-      if (lWrist && rWrist) {
-        const wristDist = calculateDistance(lWrist, rWrist);
-        // Hands within 65% of torso length allow comfortable Anjali mudra or overhead reach
-        if (wristDist !== null && wristDist > torsoLength * 0.65) {
-          errors.push({ priority: 1, message: 'Bring hands together in prayer or clasp overhead.' });
-          jointStatus[POINTS.LEFT_WRIST] = 'warning';
-          jointStatus[POINTS.RIGHT_WRIST] = 'warning';
-        }
+      // 1. Hands sanity: wrists should be relatively close (e.g. within 0.8 * torso distance)
+      if (wristDist !== null && wristDist > torsoDist * 0.85) {
+        errors.push({ priority: 2, message: 'Bring your palms together in prayer position.' });
+        if (lWrist) jointStatus[POINTS.LEFT_WRIST] = 'warning';
+        if (rWrist) jointStatus[POINTS.RIGHT_WRIST] = 'warning';
       }
 
-      // 2. SMART LEG CHECK: One straight standing leg, one folded leg
+      // 2. Leg sanity: one leg standing (>140°), one leg folded in (<135°)
+      // ALSO: the folded ankle should NOT be kicked far backwards or wildly high in the air
       if (lKneeAngle !== null && rKneeAngle !== null) {
-        // Left folded, right standing
-        const leftIsFolded = lKneeAngle < 145 && rKneeAngle > 130;
-        // Right folded, left standing
-        const rightIsFolded = rKneeAngle < 145 && lKneeAngle > 130;
+        const leftFolded = lKneeAngle < 135 && rKneeAngle > 140;
+        const rightFolded = rKneeAngle < 135 && lKneeAngle > 140;
 
-        if (!leftIsFolded && !rightIsFolded) {
-          errors.push({ priority: 1, message: 'Stand firmly on one straight leg and bend the other.' });
+        if (!leftFolded && !rightFolded) {
+          errors.push({ priority: 2, message: 'Rest one foot against your inner standing leg.' });
           jointStatus[POINTS.LEFT_KNEE] = 'warning';
           jointStatus[POINTS.RIGHT_KNEE] = 'warning';
-        } else if (lAnkle && rAnkle) {
-          // Verify folded foot is lifted off the ground
-          if (leftIsFolded && lAnkle.y >= rAnkle.y - 15) {
-            errors.push({ priority: 1, message: 'Lift your folded foot off the floor onto your inner leg.' });
-            jointStatus[POINTS.LEFT_ANKLE] = 'warning';
-          } else if (rightIsFolded && rAnkle.y >= lAnkle.y - 15) {
-            errors.push({ priority: 1, message: 'Lift your folded foot off the floor onto your inner leg.' });
-            jointStatus[POINTS.RIGHT_ANKLE] = 'warning';
+        } else {
+          // Check that folded ankle is placed inward near the standing knee/thigh (not kicking behind or in air)
+          if (leftFolded && lAnkle && rKnee) {
+            const ankleToStandingKnee = calculateDistance(lAnkle, rKnee);
+            if (ankleToStandingKnee > torsoDist * 1.5) {
+              errors.push({ priority: 2, message: 'Keep folded foot resting against inner standing leg.' });
+              jointStatus[POINTS.LEFT_ANKLE] = 'warning';
+            }
+          } else if (rightFolded && rAnkle && lKnee) {
+            const ankleToStandingKnee = calculateDistance(rAnkle, lKnee);
+            if (ankleToStandingKnee > torsoDist * 1.5) {
+              errors.push({ priority: 2, message: 'Keep folded foot resting against inner standing leg.' });
+              jointStatus[POINTS.RIGHT_ANKLE] = 'warning';
+            }
           }
         }
       }
@@ -244,31 +246,26 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
     }
 
     case 'Chair': {
-      // Chair pose: both knees bent (75° to 140°), both feet grounded
-      if (lKneeAngle !== null && lKneeAngle > 145) {
-        errors.push({ priority: 2, message: 'Bend your knees deeper into chair stance.' });
+      // Both knees should show a visible bend (knee angles < 155°)
+      if (lKneeAngle !== null && lKneeAngle > 155) {
+        errors.push({ priority: 2, message: 'Bend knees deeper into chair pose.' });
         jointStatus[POINTS.LEFT_KNEE] = 'warning';
       }
-      if (rKneeAngle !== null && rKneeAngle > 145) {
-        if (!errors.some(e => e.message.includes('knees deeper'))) {
-          errors.push({ priority: 2, message: 'Bend your knees deeper into chair stance.' });
+      if (rKneeAngle !== null && rKneeAngle > 155) {
+        if (!errors.some(e => e.message.includes('Bend knees'))) {
+          errors.push({ priority: 2, message: 'Bend knees deeper into chair pose.' });
         }
         jointStatus[POINTS.RIGHT_KNEE] = 'warning';
-      }
-      // Torso should be angled forward, arms raised
-      if (lWrist && lShoulder && lWrist.y > lShoulder.y + 20) {
-        errors.push({ priority: 2, message: 'Raise both arms upward alongside ears.' });
-        jointStatus[POINTS.LEFT_WRIST] = 'warning';
       }
       break;
     }
 
     case 'Warrior': {
-      // Warrior: One leg bent, back leg extended
+      // Front knee bent, back leg extended
       if (lKneeAngle !== null && rKneeAngle !== null) {
-        const hasBentAndStraight = (lKneeAngle < 130 && rKneeAngle > 140) || (rKneeAngle < 130 && lKneeAngle > 140);
-        if (!hasBentAndStraight) {
-          errors.push({ priority: 1, message: 'Lunge deeper: front knee bent, back leg straight.' });
+        const hasLunge = (lKneeAngle < 135 && rKneeAngle > 140) || (rKneeAngle < 135 && lKneeAngle > 140);
+        if (!hasLunge) {
+          errors.push({ priority: 2, message: 'Deepen your lunge: bend front knee, straighten back leg.' });
           jointStatus[POINTS.LEFT_KNEE] = 'warning';
           jointStatus[POINTS.RIGHT_KNEE] = 'warning';
         }
@@ -277,44 +274,38 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
     }
 
     case 'Dog': {
-      // Downward Dog: Inverted V, arms and legs extended
-      if (lKneeAngle !== null && lKneeAngle < 135) {
-        errors.push({ priority: 2, message: 'Lengthen your hamstrings and straighten legs.' });
-        jointStatus[POINTS.LEFT_KNEE] = 'warning';
+      // Downward Dog: arms extended
+      if (lElbowAngle !== null && lElbowAngle < 130) {
+        errors.push({ priority: 3, message: 'Press firmly through palms to extend arms.' });
+        jointStatus[POINTS.LEFT_ELBOW] = 'warning';
       }
-      if ((lElbowAngle !== null && lElbowAngle < 135) || (rElbowAngle !== null && rElbowAngle < 135)) {
-        errors.push({ priority: 2, message: 'Press through palms and extend your arms.' });
-        if (lElbowAngle !== null && lElbowAngle < 135) jointStatus[POINTS.LEFT_ELBOW] = 'warning';
-        if (rElbowAngle !== null && rElbowAngle < 135) jointStatus[POINTS.RIGHT_ELBOW] = 'warning';
+      if (rElbowAngle !== null && rElbowAngle < 130) {
+        jointStatus[POINTS.RIGHT_ELBOW] = 'warning';
       }
       break;
     }
 
     case 'Cobra': {
-      // Cobra: Chest lifted, hips low
-      if (lShoulder && lHip) {
-        if (lShoulder.y >= lHip.y - 10) {
-          errors.push({ priority: 1, message: 'Lift your chest and gaze upward gently.' });
-          jointStatus[POINTS.LEFT_SHOULDER] = 'warning';
-        }
+      // Chest lifted above hips
+      if (lShoulder && lHip && lShoulder.y >= lHip.y + 10) {
+        errors.push({ priority: 1, message: 'Lift chest off the mat gently.' });
+        jointStatus[POINTS.LEFT_SHOULDER] = 'warning';
       }
       break;
     }
 
     case 'Triangle':
     case 'Traingle': {
-      // Triangle: Front leg extended without deep bend
-      if (lKneeAngle !== null && lKneeAngle < 140 && rKneeAngle !== null && rKneeAngle < 140) {
-        errors.push({ priority: 2, message: 'Keep legs extended without excessive knee bend.' });
+      if (lKneeAngle !== null && lKneeAngle < 135 && rKneeAngle !== null && rKneeAngle < 135) {
+        errors.push({ priority: 2, message: 'Keep front leg straight in triangle stance.' });
         jointStatus[POINTS.LEFT_KNEE] = 'warning';
       }
       break;
     }
 
     case 'Shoulderstand': {
-      // Shoulderstand: legs vertical, hips above shoulders
-      if (lHip && lShoulder && lHip.y >= lShoulder.y) {
-        errors.push({ priority: 1, message: 'Elevate your hips and torso vertically above shoulders.' });
+      if (lHip && lShoulder && lHip.y > lShoulder.y) {
+        errors.push({ priority: 1, message: 'Elevate hips vertically above shoulders.' });
         jointStatus[POINTS.LEFT_HIP] = 'warning';
       }
       break;
@@ -324,7 +315,7 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
       break;
   }
 
-  // Check hyperextension
+  // Check general hyperextension
   const { alerts: hyperAlerts } = checkHyperextension(keypoints, minScore);
   hyperAlerts.forEach(alert => {
     errors.push({ priority: 1, message: alert.message });
@@ -333,13 +324,12 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.35) {
 
   // Check symmetry
   const symmetry = checkSlopeSymmetry(keypoints, minScore);
-  if (symmetry.warning && errors.length === 0) {
-    errors.push({ priority: 2, message: symmetry.warning });
+  if (symmetry.warning) {
     jointStatus[POINTS.LEFT_SHOULDER] = 'warning';
     jointStatus[POINTS.RIGHT_SHOULDER] = 'warning';
   }
 
-  // Sort errors by priority (1 = highest urgency)
+  // Sort errors by priority
   errors.sort((a, b) => a.priority - b.priority);
 
   return {

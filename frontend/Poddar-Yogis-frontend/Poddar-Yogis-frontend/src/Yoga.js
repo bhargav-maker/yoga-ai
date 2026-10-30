@@ -9,40 +9,17 @@ import Instructions from './Instructions';
 import './Yoga.css';
 
 import { poseImages } from './utils/pose_images';
-import { POINTS } from './utils/data';
+import { POINTS, keypointConnections } from './utils/data';
 import { drawPoint, drawSegment } from './utils/helper';
 
 // --- BIOMECHANICAL & ANALYTICS ENGINES ---
 import { smoothKeypoints, evaluatePoseBiomechanics } from './utils/biomechanics';
 import { StabilityTracker } from './utils/stabilityTracker';
 import { audioCoach } from './utils/audioCoach';
+import { BreathingEngine } from './utils/breathingEngine';
 import { saveSessionRecord } from './utils/db';
 import { computeSessionScorecard } from './utils/scorecard';
 import DiagnosticModal from './DiagnosticModal';
-
-// Anatomical bone connections with proper hip and leg attachments
-const anatomicalConnections = [
-  // Head
-  [POINTS.NOSE, POINTS.LEFT_EYE],
-  [POINTS.NOSE, POINTS.RIGHT_EYE],
-  [POINTS.LEFT_EYE, POINTS.LEFT_EAR],
-  [POINTS.RIGHT_EYE, POINTS.RIGHT_EAR],
-  // Shoulders & Torso
-  [POINTS.LEFT_SHOULDER, POINTS.RIGHT_SHOULDER],
-  [POINTS.LEFT_SHOULDER, POINTS.LEFT_HIP],
-  [POINTS.RIGHT_SHOULDER, POINTS.RIGHT_HIP],
-  [POINTS.LEFT_HIP, POINTS.RIGHT_HIP],
-  // Arms
-  [POINTS.LEFT_SHOULDER, POINTS.LEFT_ELBOW],
-  [POINTS.LEFT_ELBOW, POINTS.LEFT_WRIST],
-  [POINTS.RIGHT_SHOULDER, POINTS.RIGHT_ELBOW],
-  [POINTS.RIGHT_ELBOW, POINTS.RIGHT_WRIST],
-  // Legs (direct attachment from Hips to Knees to Ankles)
-  [POINTS.LEFT_HIP, POINTS.LEFT_KNEE],
-  [POINTS.LEFT_KNEE, POINTS.LEFT_ANKLE],
-  [POINTS.RIGHT_HIP, POINTS.RIGHT_KNEE],
-  [POINTS.RIGHT_KNEE, POINTS.RIGHT_ANKLE],
-];
 
 let poseList = [
   'Tree', 'Chair', 'Cobra', 'Warrior', 'Dog',
@@ -123,7 +100,8 @@ function Yoga() {
 
   // Biomechanical engine refs
   const prevKeypointsRef = useRef(null);
-  const stabilityTrackerRef = useRef(new StabilityTracker(15, 20.0));
+  const stabilityTrackerRef = useRef(new StabilityTracker(15, 24.0));
+  const breathingEngineRef = useRef(new BreathingEngine(4000, 4000, 4000));
   const rollingWindowRef = useRef([]); // 5-frame rolling ML probability
   const telemetryRef = useRef({
     stabilityScores: [],
@@ -134,25 +112,39 @@ function Yoga() {
   });
 
   // State
+  const [startingTime, setStartingTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [poseTime, setPoseTime] = useState(0);
   const [bestPerform, setBestPerform] = useState(0);
   const [currentPose, setCurrentPose] = useState('Tree');
   const [isStartPose, setIsStartPose] = useState(false);
   const [isModelLoading, setIsModelLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
-  const [scorecard, setScorecard] = useState(null);
-  const [cameraOrientation, setCameraOrientation] = useState('landscape'); // 'landscape' (640x480) or 'portrait' (480x640)
 
-  // Track hold duration with precision
-  const lastTimestampRef = useRef(Date.now());
+  // Post-pose scorecard modal
+  const [scorecard, setScorecard] = useState(null);
+
+  // Synchronize timer with flag
+  useEffect(() => {
+    const timeDiff = (currentTime - startingTime) / 1000;
+    if (flagRef.current) {
+      setPoseTime(timeDiff);
+      if (timeDiff > bestPerform) {
+        setBestPerform(timeDiff);
+      }
+    }
+  }, [currentTime, startingTime, bestPerform]);
 
   useEffect(() => {
+    setCurrentTime(0);
+    setStartingTime(0);
     setPoseTime(0);
     setBestPerform(0);
     flagRef.current = false;
     prevKeypointsRef.current = null;
     rollingWindowRef.current = [];
     stabilityTrackerRef.current.reset();
+    breathingEngineRef.current.reset();
     telemetryRef.current = {
       stabilityScores: [],
       symmetryScores: [],
@@ -208,16 +200,13 @@ function Yoga() {
       }
 
       if (!pose || pose.length === 0 || !pose[0].keypoints) {
-        flagRef.current = false;
-        countAudio.pause();
-        countAudio.currentTime = 0;
         return;
       }
 
       try {
         const rawKeypoints = pose[0].keypoints;
 
-        // --- TEMPORAL SMOOTHING (EMA) ---
+        // --- FEATURE 7: TEMPORAL SMOOTHING (EMA) ---
         const keypoints = smoothKeypoints(prevKeypointsRef.current, rawKeypoints, 0.65);
         prevKeypointsRef.current = keypoints;
 
@@ -227,13 +216,25 @@ function Yoga() {
           return [kp.x, kp.y];
         });
 
-        // --- STABILITY & MICRO-MOVEMENT ANALYSIS ---
+        // --- FEATURE 2: STABILITY & MICRO-MOVEMENT ANALYSIS ---
         const stability = stabilityTrackerRef.current.update(keypoints, 0.35);
 
-        // --- STRICT KINEMATICS & POSE GEOMETRY ---
-        const biomech = evaluatePoseBiomechanics(currentPose, keypoints, 0.35);
+        // --- BALANCED BIOMECHANICAL EVALUATION (Sanity checks, not robotic strictness) ---
+        const biomech = evaluatePoseBiomechanics(currentPose, keypoints, 0.30);
 
-        // --- CLASSIFICATION & RIGIDITY FILTER ---
+        // --- FEATURE 5: CLEAN PRANAYAMA BREATHING AURA ---
+        const lSh = keypoints[POINTS.LEFT_SHOULDER];
+        const rSh = keypoints[POINTS.RIGHT_SHOULDER];
+        if (lSh && rSh && lSh.score > 0.3 && rSh.score > 0.3) {
+          breathingEngineRef.current.drawAura(
+            ctx,
+            (lSh.x + rSh.x) / 2,
+            (lSh.y + rSh.y) / 2 + 15,
+            24
+          );
+        }
+
+        // --- BALANCED DETECTION ENGINE (ML + Biomechanical Sanity Checks) ---
         let isPoseRecognized = false;
         let currentAccuracyPct = 80;
 
@@ -250,38 +251,52 @@ function Yoga() {
           const avgScore = rollingWindowRef.current.reduce((a, b) => a + b, 0) / rollingWindowRef.current.length;
           currentAccuracyPct = Math.round(avgScore * 100);
 
-          // BALANCED CHECK:
-          // Recognizes real posture smoothly (>0.70) while verifying essential anatomy
-          if (avgScore > 0.70 && biomech.isGeometricallyValid) {
+          // Balanced Detection:
+          // Must achieve good ML confidence (>0.82) AND pass basic sanity checks (e.g. hands clasped in tree)
+          // If ML is very high (>0.94), it passes smoothly.
+          if (avgScore > 0.94 || (avgScore > 0.82 && biomech.isGeometricallyValid)) {
             isPoseRecognized = true;
           }
         }
 
-        // --- DRAW SKELETON WITH ANATOMICAL CONTINUITY ---
-        // 1. Draw Bones (segments)
-        anatomicalConnections.forEach(([p1Idx, p2Idx]) => {
-          const kp1 = keypoints[p1Idx];
-          const kp2 = keypoints[p2Idx];
-          if (kp1 && kp2 && kp1.score > 0.3 && kp2.score > 0.3) {
-            let lineColor = isPoseRecognized ? 'rgb(0, 255, 0)' : 'rgb(255, 255, 255)';
-            if (biomech.jointStatus[p1Idx] === 'error' || biomech.jointStatus[p2Idx] === 'error') {
-              lineColor = 'rgb(239, 68, 68)';
+        // --- SKELETON DRAWING (Full Anatomical Connections) ---
+        // 1. Draw bones first
+        keypoints.forEach((kp, idx) => {
+          if (kp.score > 0.30 && !(kp.name === 'left_eye' || kp.name === 'right_eye')) {
+            const connections = keypointConnections[kp.name];
+            if (connections) {
+              connections.forEach((conn) => {
+                const targetIdx = POINTS[conn.toUpperCase()];
+                if (targetIdx !== undefined && keypoints[targetIdx] && keypoints[targetIdx].score > 0.25) {
+                  let lineColor = isPoseRecognized ? 'rgb(0, 255, 0)' : 'rgb(255, 255, 255)';
+                  // Red line if joint has hyperextension alert
+                  if (biomech.jointStatus[idx] === 'error' || biomech.jointStatus[targetIdx] === 'error') {
+                    lineColor = 'rgb(239, 68, 68)';
+                  }
+                  drawSegment(
+                    ctx,
+                    [kp.x, kp.y],
+                    [keypoints[targetIdx].x, keypoints[targetIdx].y],
+                    lineColor
+                  );
+                }
+              });
             }
-            drawSegment(ctx, [kp1.x, kp1.y], [kp2.x, kp2.y], lineColor);
           }
         });
 
-        // 2. Draw Joints (points)
+        // 2. Draw joints over bones
         keypoints.forEach((kp, idx) => {
-          if (kp.score > 0.35 && !(kp.name === 'left_eye' || kp.name === 'right_eye')) {
+          if (kp.score > 0.30 && !(kp.name === 'left_eye' || kp.name === 'right_eye')) {
             let ptColor = isPoseRecognized ? 'rgb(0, 255, 0)' : 'rgb(255, 255, 255)';
-            let ptSize = 6;
+            let ptSize = 7;
 
+            // Highlight hyperextended joint in red
             if (biomech.jointStatus[idx] === 'error') {
-              ptColor = 'rgb(239, 68, 68)'; // Red
-              ptSize = 9;
+              ptColor = 'rgb(239, 68, 68)';
+              ptSize = 10;
             } else if (biomech.jointStatus[idx] === 'warning') {
-              ptColor = 'rgb(245, 158, 11)'; // Orange
+              ptColor = 'rgb(245, 158, 11)';
               ptSize = 8;
             }
 
@@ -290,31 +305,26 @@ function Yoga() {
         });
 
         // --- TIMER & AUDIO FEEDBACK LOGIC ---
-        const now = Date.now();
-        const deltaSeconds = (now - lastTimestampRef.current) / 1000;
-        lastTimestampRef.current = now;
-
         if (isPoseRecognized) {
           if (!flagRef.current) {
             countAudio.play().catch((audioErr) => console.warn('Audio notice:', audioErr));
+            setStartingTime(new Date().getTime());
             flagRef.current = true;
           }
 
-          // Accumulates hold time naturally while in pose
-          setPoseTime((prev) => {
-            const newTime = prev + deltaSeconds;
-            setBestPerform((best) => Math.max(best, newTime));
-            return newTime;
-          });
+          // Accumulate time if stable (or normal timer)
+          if (stability.isStable) {
+            setCurrentTime(new Date().getTime());
+          }
 
-          // Spoken guidance for minor adjustments
+          // Gentle voice guidance for any priority posture corrections
           if (biomech.topCorrection) {
             audioCoach.speak(biomech.topCorrection);
           }
 
-          // Log telemetry
+          // Telemetry
           telemetryRef.current.stabilityScores.push(stability.stabilityPercentage);
-          telemetryRef.current.symmetryScores.push(biomech.symmetry.isSymmetric ? 95 : 70);
+          telemetryRef.current.symmetryScores.push(biomech.symmetry.isSymmetric ? 95 : 75);
           telemetryRef.current.accuracyScores.push(currentAccuracyPct);
           if (biomech.hyperAlerts.length > 0) {
             telemetryRef.current.hyperextensionCount += biomech.hyperAlerts.length;
@@ -327,7 +337,7 @@ function Yoga() {
           countAudio.pause();
           countAudio.currentTime = 0;
 
-          // Provide guidance when attempting pose
+          // If user is attempting pose, provide verbal guidance
           if (biomech.topCorrection && notDetected <= 3) {
             audioCoach.speak(biomech.topCorrection);
           }
@@ -351,7 +361,6 @@ function Yoga() {
     if (detectorRef.current && classifierRef.current) {
       if (!isPreload) {
         setIsModelLoading(false);
-        lastTimestampRef.current = Date.now();
         scheduleNextDetection(detectorRef.current, classifierRef.current, countAudioRef.current);
       }
       return;
@@ -395,7 +404,6 @@ function Yoga() {
 
       setIsModelLoading(false);
       if (!isPreload) {
-        lastTimestampRef.current = Date.now();
         scheduleNextDetection(detector, poseClassifier, countAudio);
       }
     } catch (err) {
@@ -410,7 +418,7 @@ function Yoga() {
   function startYoga() {
     setIsStartPose(true);
     setScorecard(null);
-    lastTimestampRef.current = Date.now();
+    breathingEngineRef.current.reset();
     stabilityTrackerRef.current.reset();
 
     if (detectorRef.current && classifierRef.current) {
@@ -434,8 +442,8 @@ function Yoga() {
     audioCoach.stop();
     flagRef.current = false;
 
-    // --- AUTO-SAVE SESSION SCORECARD TO INDEXEDDB ---
-    if (poseTime > 0.5) {
+    // --- FEATURE 6: GENERATE & SAVE AUTOMATED DIAGNOSTIC SCORECARD ---
+    if (poseTime > 1.0) {
       const card = computeSessionScorecard({
         poseName: currentPose,
         durationSeconds: poseTime,
@@ -451,9 +459,19 @@ function Yoga() {
     }
   }
 
+  // --- EXACT ORIGINAL CLEAN SKELETON SCREEN UI ---
   if (isStartPose) {
     return (
       <div className="yoga-container">
+        <div className="performance-container">
+          <div className="pose-performance">
+            <h4>Pose Time: {poseTime.toFixed(1)} s</h4>
+          </div>
+          <div className="pose-performance">
+            <h4>Best: {bestPerform.toFixed(1)} s</h4>
+          </div>
+        </div>
+
         {isModelLoading && (
           <div className="starting-contdown">
             <h1>Loading model...</h1>
@@ -473,80 +491,42 @@ function Yoga() {
           </div>
         )}
 
-        <div className={`studio-stage ${cameraOrientation}`}>
-          <div className={`camera-card ${cameraOrientation}`}>
-            <div className="performance-container">
-              <div className="pose-performance">
-                <h4>Pose Time: {poseTime.toFixed(1)} s</h4>
-              </div>
-              <div className="pose-performance">
-                <h4>Best: {bestPerform.toFixed(1)} s</h4>
-              </div>
-              <div className="orientation-toggle-group">
-                <button
-                  type="button"
-                  className={`btn-orientation ${cameraOrientation === 'landscape' ? 'active' : ''}`}
-                  onClick={() => setCameraOrientation('landscape')}
-                  title="Switch to Landscape Mode (Wide 4:3)"
-                >
-                  🖥️ Landscape
-                </button>
-                <button
-                  type="button"
-                  className={`btn-orientation ${cameraOrientation === 'portrait' ? 'active' : ''}`}
-                  onClick={() => setCameraOrientation('portrait')}
-                  title="Switch to Portrait Mode (Tall Full-Body 3:4)"
-                >
-                  📱 Portrait
-                </button>
-              </div>
-            </div>
-
-            <Webcam
-              width={cameraOrientation === 'landscape' ? 640 : 480}
-              height={cameraOrientation === 'landscape' ? 480 : 640}
-              id="webcam"
-              ref={webcamRef}
-              videoConstraints={{
-                width: cameraOrientation === 'landscape' ? 640 : 480,
-                height: cameraOrientation === 'landscape' ? 480 : 640,
-                facingMode: 'user',
-              }}
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                padding: '0px',
-              }}
-            />
-            <canvas
-              ref={canvasRef}
-              id="my-canvas"
-              width={cameraOrientation === 'landscape' ? 640 : 480}
-              height={cameraOrientation === 'landscape' ? 480 : 640}
-              style={{
-                position: 'absolute',
-                left: 0,
-                top: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 2,
-              }}
-            />
-          </div>
-
-          <div className={`pose-card ${cameraOrientation}`}>
-            <h3 className="pose-card-title">
-              <span>🎯 Target:</span> {currentPose} Pose
-            </h3>
-            <img src={poseImages[currentPose]} className="pose-img" alt={`${currentPose} Target Reference`} />
+        <div>
+          <Webcam
+            width={640}
+            height={480}
+            id="webcam"
+            ref={webcamRef}
+            videoConstraints={{
+              width: 640,
+              height: 480,
+              facingMode: 'user',
+            }}
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              padding: '0px',
+            }}
+          />
+          <canvas
+            ref={canvasRef}
+            id="my-canvas"
+            width={640}
+            height={480}
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 100,
+              zIndex: 1,
+            }}
+          />
+          <div>
+            <img src={poseImages[currentPose]} className="pose-img" alt="Pose Target" />
           </div>
         </div>
 
-        <button onClick={stopPose} className="secondary-btn" style={{ position: 'static', margin: '24px auto', display: 'block' }}>
+        <button onClick={stopPose} className="secondary-btn">
           Stop Pose
         </button>
       </div>
@@ -560,13 +540,13 @@ function Yoga() {
       <nav className="studio-nav-bar">
         <Link to="/" className="studio-logo">Poddar Yogis</Link>
         <div className="studio-nav-links">
-          <Link to="/progress" className="studio-link">📊 Analytics & Progress</Link>
+          <Link to="/progress" className="studio-link">📊 Analytics & History</Link>
           <Link to="/tutorials" className="studio-link">📖 Tutorials</Link>
           <Link to="/about" className="studio-link">ℹ️ About</Link>
         </div>
       </nav>
 
-      {/* 10-Second Auto-Closing Diagnostic Scorecard Modal */}
+      {/* Post-Pose Diagnostic Scorecard Modal with 10s Auto-Close */}
       {scorecard && (
         <DiagnosticModal
           scorecard={scorecard}
@@ -583,7 +563,7 @@ function Yoga() {
         >
           {(poseList || []).map((pose) => (
             <option key={pose} value={pose}>
-              {pose} Pose
+              {pose}
             </option>
           ))}
         </select>

@@ -1,7 +1,7 @@
 /**
  * Pranayama & Breathing Synchronization Engine for Yoga AI
  * Pairs a yogic breathing rhythm (Inhale 4s -> Hold 4s -> Exhale 4s) with pose holding.
- * Computes expansion/contraction factors and renders an animated chest aura on canvas.
+ * Computes smooth expansion/contraction factors and renders a clean, transparent pulsing ring.
  */
 
 export class BreathingEngine {
@@ -18,74 +18,83 @@ export class BreathingEngine {
   }
 
   /**
-   * Calculates the current breath phase, progress, and visual scale factor.
+   * Calculates current breath phase and smooth sinusoidal scale factor.
    */
   getState() {
     const elapsed = (Date.now() - this.startTime) % this.cycleMs;
 
     if (elapsed < this.inhaleMs) {
       const progress = elapsed / this.inhaleMs;
-      // Scales smoothly from 1.0 to 1.6
-      const radiusScale = 1.0 + 0.6 * progress;
+      // Smooth sinusoidal growth from 1.0 to 1.7
+      const smoothEase = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+      const radiusScale = 1.0 + 0.7 * smoothEase;
       return {
         phase: 'Inhale',
-        instruction: 'Deep Inhale...',
+        instruction: 'Inhale Slowly...',
         progress,
         radiusScale,
-        color: 'rgba(56, 189, 248, 0.45)', // Sky blue
-        glowColor: 'rgba(56, 189, 248, 0.9)'
+        ringColor: 'rgba(56, 189, 248, 0.85)',
+        haloColor: 'rgba(56, 189, 248, 0.15)'
       };
     } else if (elapsed < this.inhaleMs + this.holdMs) {
       const progress = (elapsed - this.inhaleMs) / this.holdMs;
+      // Gentle micro-pulse during retention
+      const microPulse = Math.sin(progress * Math.PI * 2) * 0.05;
+      const radiusScale = 1.7 + microPulse;
       return {
         phase: 'Hold',
         instruction: 'Retain Breath...',
         progress,
-        radiusScale: 1.6,
-        color: 'rgba(16, 185, 129, 0.45)', // Emerald green
-        glowColor: 'rgba(16, 185, 129, 0.9)'
+        radiusScale,
+        ringColor: 'rgba(16, 185, 129, 0.9)',
+        haloColor: 'rgba(16, 185, 129, 0.2)'
       };
     } else {
       const progress = (elapsed - this.inhaleMs - this.holdMs) / this.exhaleMs;
-      // Contracts smoothly from 1.6 back to 1.0
-      const radiusScale = 1.6 - 0.6 * progress;
+      // Smooth sinusoidal contraction from 1.7 back down to 1.0
+      const smoothEase = 0.5 + 0.5 * Math.cos(progress * Math.PI);
+      const radiusScale = 1.0 + 0.7 * smoothEase;
       return {
         phase: 'Exhale',
-        instruction: 'Slow Exhale...',
+        instruction: 'Exhale Fully...',
         progress,
         radiusScale,
-        color: 'rgba(168, 85, 247, 0.45)', // Purple
-        glowColor: 'rgba(168, 85, 247, 0.9)'
+        ringColor: 'rgba(168, 85, 247, 0.85)',
+        haloColor: 'rgba(168, 85, 247, 0.15)'
       };
     }
   }
 
   /**
-   * Draws a soft pulsing breath aura on the HTML5 canvas at the chest coordinate.
+   * Draws a clean, elegant breath ring without muddy center artifacts.
    */
-  drawAura(ctx, x, y, baseRadius = 24) {
+  drawAura(ctx, x, y, baseRadius = 26) {
     if (!ctx || x === undefined || y === undefined) return;
     const state = this.getState();
     const currentRadius = baseRadius * state.radiusScale;
 
     ctx.save();
-    // Outer radial glow
-    const gradient = ctx.createRadialGradient(x, y, baseRadius * 0.5, x, y, currentRadius);
-    gradient.addColorStop(0, state.glowColor);
-    gradient.addColorStop(0.6, state.color);
-    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
+    
+    // 1. Soft subtle halo (no dense dark center)
     ctx.beginPath();
     ctx.arc(x, y, currentRadius, 0, 2 * Math.PI);
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = state.haloColor;
     ctx.fill();
 
-    // Central pulsing ring
+    // 2. Clean crisp neon breathing ring
     ctx.beginPath();
-    ctx.arc(x, y, currentRadius * 0.75, 0, 2 * Math.PI);
-    ctx.strokeStyle = state.glowColor;
-    ctx.lineWidth = 2;
+    ctx.arc(x, y, currentRadius, 0, 2 * Math.PI);
+    ctx.strokeStyle = state.ringColor;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = state.ringColor;
+    ctx.shadowBlur = 8;
     ctx.stroke();
+
+    // 3. Small central anchor dot
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+    ctx.fillStyle = state.ringColor;
+    ctx.fill();
 
     ctx.restore();
   }

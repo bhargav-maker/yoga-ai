@@ -26,26 +26,22 @@
 }
 
 .secondary-btn {
-    padding: 12px 32px;
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    background-color: rgba(15, 23, 42, 0.75);
-    backdrop-filter: blur(8px);
+    position: relative;
+    left: 45%;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.35);
     color: white;
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
-    margin: 25px auto 30px auto;
-    display: block;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .secondary-btn:hover {
-    background-color: #ef4444;
-    border-color: #f87171;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    background-color: rgba(0, 0, 0, 0.6);
+    transform: translateY(-1px);
 }
 
 .starting-contdown {
@@ -61,155 +57,33 @@
 .starting-contdown h1 {
     color: white;
 }
-
-/* Responsive Studio Stage: Camera on Left, Pose Image on Right */
-.studio-stage {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 36px;
-    margin-top: 20px;
-    padding: 0 24px;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 2;
-}
-
-.camera-card {
-    position: relative;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    background: #0f172a;
-    transition: width 0.3s ease, height 0.3s ease;
-}
-
-.camera-card.landscape {
-    width: 640px;
-    height: 480px;
-    max-width: 95vw;
-}
-
-.camera-card.portrait {
-    width: 480px;
-    height: 640px;
-    max-width: 95vw;
-    max-height: 80vh;
-}
-
-.pose-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(16px);
-    padding: 18px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-    max-width: 460px;
-    transition: all 0.3s ease;
-}
-
-.pose-card.portrait {
-    max-width: 420px;
-}
-
-.pose-card.portrait .pose-img {
-    height: 520px;
-    object-fit: contain;
-    background: rgba(0,0,0,0.3);
-}
-
-.pose-card-title {
-    color: #ffffff;
-    font-size: 20px;
-    font-weight: 800;
-    margin: 0 0 14px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
 .pose-img {
-    width: 420px;
-    max-width: 85vw;
-    height: 380px;
-    object-fit: cover;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    border: 2px solid rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease;
-}
-
-/* Orientation Switcher Buttons */
-.orientation-toggle-group {
-    display: flex;
-    gap: 6px;
-    background: rgba(15, 23, 42, 0.85);
-    padding: 3px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.btn-orientation {
-    background: transparent;
-    color: #94a3b8;
-    border: none;
-    border-radius: 7px;
-    padding: 5px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-orientation:hover {
-    color: #ffffff;
-}
-
-.btn-orientation.active {
-    background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%);
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
-}
-
-/* Custom Soft Scrollbars for Studio */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: rgba(15, 23, 42, 0.2);
-}
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.5), rgba(14, 165, 233, 0.5));
-    border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(16, 185, 129, 0.8), rgba(14, 165, 233, 0.8));
+    position: absolute;
+    right: 120px;
+    top: 80px;
+    width: 500px;
+    aspect-ratio: 1;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
 
 .performance-container {
     display: flex;
-    padding: 10px 14px;
+    padding: 15px 20px;
     position: absolute;
-    left: 12px;
-    top: 12px;
-    gap: 8px;
+    left: 120px;
+    top: 15px;
+    gap: 12px;
     z-index: 10;
     align-items: center;
-    flex-wrap: wrap;
 }
 
 .pose-performance {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
     border-radius: 10px;
-    padding: 6px 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 8px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 .pose-performance h4 {
     color: #1e293b;
