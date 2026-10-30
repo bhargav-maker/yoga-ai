@@ -222,7 +222,7 @@ add_header(s4, "The 7 Breakthrough Engineering Solutions")
 solutions_col1 = [
     "1. Anti-Cheating Hand & Leg Gates: Hands must be in prayer/overhead; one straight standing leg and one elevated foot required.",
     "2. Natural Biomechanical Tolerances: Relaxed thresholds (wrist distance <65% torso, knee bend >130°) so real human postures score smoothly.",
-    "3. Anatomically Continuous Skeleton: Explicit anatomical joint binding (hips to knees to ankles) with green/amber/red color status.",
+    "3. Dual Landscape & Portrait Modes: One-click switcher toggles between 4:3 Wide Studio & 3:4 Tall Full-Body view for standing postures.",
     "4. Side-by-Side Reference Studio: Target pose reference photo is positioned cleanly next to camera stream across all screen sizes."
 ]
 
@@ -312,15 +312,16 @@ create_card(s6, Inches(6.9), Inches(1.6), Inches(5.6), Inches(5.3),
 # ==============================================================================
 s7 = prs.slides.add_slide(prs.slide_layouts[6])
 set_slide_background(s7)
-add_header(s7, "Clean Studio UI & 10-Second Diagnostic Scorecard")
+add_header(s7, "Dual-Mode Camera (Landscape & Portrait) & 10s Scorecard")
 
 create_card(s7, Inches(0.8), Inches(1.6), Inches(5.6), Inches(5.3),
-            "🧘 Ergonomic Studio UI Design",
-            ["Responsive Studio Stage: Flexbox layout displays webcam feed (640x480) and target pose illustration side-by-side on all screens.",
-             "HUD Overlays: Floating semi-transparent cards report real-time 'Pose Time: X.X s' and 'Best: X.X s' without obscuring the user.",
-             "Continuous Anatomy: Green bones when aligned, Orange warnings on deviations, and Red alerts on hyperextension risks.",
+            "🧘 Dual-Mode Camera & Ergonomics",
+            ["Landscape (640x480): Wide studio perspective ideal for mat floor poses like Downward Dog and Cobra.",
+             "Portrait (480x640): Tall full-body perspective ideal for vertical standing poses like Tree and Chair.",
+             "One-Click Live Switcher: Instant toggle button on the camera HUD switches resolution without reloading models.",
+             "Responsive Stage: Flexbox layout displays camera feed and target reference photo side-by-side on all screens.",
              "Sub-15ms Latency: MoveNet Lightning runs locally at 30-60 FPS with zero video transmission outside the device."],
-            C_PRIMARY, 16, 12.5)
+            C_PRIMARY, 16, 12)
 
 create_card(s7, Inches(6.9), Inches(1.6), Inches(5.6), Inches(5.3),
             "⏱️ 10-Second Auto-Closing Modal",

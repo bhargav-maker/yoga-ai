@@ -141,6 +141,7 @@ function Yoga() {
   const [isModelLoading, setIsModelLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [scorecard, setScorecard] = useState(null);
+  const [cameraOrientation, setCameraOrientation] = useState('landscape'); // 'landscape' (640x480) or 'portrait' (480x640)
 
   // Track hold duration with precision
   const lastTimestampRef = useRef(Date.now());
@@ -472,8 +473,8 @@ function Yoga() {
           </div>
         )}
 
-        <div className="studio-stage">
-          <div className="camera-card">
+        <div className={`studio-stage ${cameraOrientation}`}>
+          <div className={`camera-card ${cameraOrientation}`}>
             <div className="performance-container">
               <div className="pose-performance">
                 <h4>Pose Time: {poseTime.toFixed(1)} s</h4>
@@ -481,16 +482,34 @@ function Yoga() {
               <div className="pose-performance">
                 <h4>Best: {bestPerform.toFixed(1)} s</h4>
               </div>
+              <div className="orientation-toggle-group">
+                <button
+                  type="button"
+                  className={`btn-orientation ${cameraOrientation === 'landscape' ? 'active' : ''}`}
+                  onClick={() => setCameraOrientation('landscape')}
+                  title="Switch to Landscape Mode (Wide 4:3)"
+                >
+                  🖥️ Landscape
+                </button>
+                <button
+                  type="button"
+                  className={`btn-orientation ${cameraOrientation === 'portrait' ? 'active' : ''}`}
+                  onClick={() => setCameraOrientation('portrait')}
+                  title="Switch to Portrait Mode (Tall Full-Body 3:4)"
+                >
+                  📱 Portrait
+                </button>
+              </div>
             </div>
 
             <Webcam
-              width={640}
-              height={480}
+              width={cameraOrientation === 'landscape' ? 640 : 480}
+              height={cameraOrientation === 'landscape' ? 480 : 640}
               id="webcam"
               ref={webcamRef}
               videoConstraints={{
-                width: 640,
-                height: 480,
+                width: cameraOrientation === 'landscape' ? 640 : 480,
+                height: cameraOrientation === 'landscape' ? 480 : 640,
                 facingMode: 'user',
               }}
               style={{
@@ -506,8 +525,8 @@ function Yoga() {
             <canvas
               ref={canvasRef}
               id="my-canvas"
-              width={640}
-              height={480}
+              width={cameraOrientation === 'landscape' ? 640 : 480}
+              height={cameraOrientation === 'landscape' ? 480 : 640}
               style={{
                 position: 'absolute',
                 left: 0,
@@ -519,7 +538,7 @@ function Yoga() {
             />
           </div>
 
-          <div className="pose-card">
+          <div className={`pose-card ${cameraOrientation}`}>
             <h3 className="pose-card-title">
               <span>🎯 Target:</span> {currentPose} Pose
             </h3>
