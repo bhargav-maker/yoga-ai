@@ -7,7 +7,7 @@
 import { POINTS } from './data';
 
 export class StabilityTracker {
-  constructor(windowSize = 15, varianceThreshold = 18.0) {
+  constructor(windowSize = 15, varianceThreshold = 38.0) {
     this.windowSize = windowSize;
     this.varianceThreshold = varianceThreshold; // pixel variance limit for "stillness"
     this.history = []; // Array of { x, y, timestamp }

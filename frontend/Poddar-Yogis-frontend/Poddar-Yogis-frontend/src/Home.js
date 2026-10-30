@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { poseImages } from './utils/pose_images'
 import './Home.css'
 
 export default function Home() {
@@ -46,56 +47,46 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Asana Difficulty Tiers Section */}
+            {/* Asana Difficulty Tiers & Pose Showcase Section */}
             <section className="poses-showcase-section">
                 <div className="section-header">
                     <h2>Supported Asanas by Difficulty Tier</h2>
-                    <p>Structured progression from foundational grounding to advanced spinal elevation.</p>
+                    <p>Each classical asana is calibrated with verified biomechanical targets, difficulty badges, and form guidelines.</p>
                 </div>
 
-                <div className="tier-cards-grid">
-                    {/* Beginner Tier */}
-                    <div className="tier-card tier-beginner">
-                        <div className="tier-badge">Beginner Foundational</div>
-                        <h3>Tree & Chair Pose</h3>
-                        <p className="tier-desc">Develop ankle stability, quadriceps strength, and fundamental body awareness.</p>
-                        <ul className="tier-list">
-                            <li><strong>Tree Pose (Vrikshasana)</strong> — Balance & pelvic squaring</li>
-                            <li><strong>Chair Pose (Utkatasana)</strong> — Core activation & knee alignment</li>
-                        </ul>
-                        <div className="tier-footer">
-                            <Link to="/start" className="tier-link">Practice Beginners →</Link>
+                <div className="poses-showcase-grid">
+                    {[
+                        { name: 'Tree', sanskrit: 'Vrikshasana', tier: 'Beginner', focus: 'Balance & Pelvic Square', badgeClass: 'tier-badge-beginner' },
+                        { name: 'Chair', sanskrit: 'Utkatasana', tier: 'Beginner', focus: 'Quads & Spinal Alignment', badgeClass: 'tier-badge-beginner' },
+                        { name: 'Cobra', sanskrit: 'Bhujangasana', tier: 'Intermediate', focus: 'Thoracic Extension', badgeClass: 'tier-badge-intermediate' },
+                        { name: 'Warrior', sanskrit: 'Virabhadrasana', tier: 'Intermediate', focus: 'Deep Lunge & Core Hold', badgeClass: 'tier-badge-intermediate' },
+                        { name: 'Dog', sanskrit: 'Adho Mukha', tier: 'Intermediate', focus: 'Shoulder & Hamstring Opening', badgeClass: 'tier-badge-intermediate' },
+                        { name: 'Triangle', sanskrit: 'Trikonasana', tier: 'Advanced', focus: 'Lateral Hip Leveling', badgeClass: 'tier-badge-expert' },
+                        { name: 'Shoulderstand', sanskrit: 'Sarvangasana', tier: 'Advanced', focus: 'Inverted Balance & Core', badgeClass: 'tier-badge-expert' }
+                    ].map((asana) => (
+                        <div key={asana.name} className="pose-showcase-card">
+                            <div className="pose-showcase-media">
+                                <img 
+                                    src={poseImages[asana.name]} 
+                                    alt={`${asana.name} Pose`} 
+                                    className="pose-showcase-img"
+                                />
+                                <span className={`pose-tier-badge ${asana.badgeClass}`}>
+                                    {asana.tier}
+                                </span>
+                            </div>
+                            <div className="pose-showcase-info">
+                                <div className="pose-title-row">
+                                    <h3>{asana.name} Pose</h3>
+                                    <span className="pose-sanskrit">({asana.sanskrit})</span>
+                                </div>
+                                <p className="pose-focus-text">🎯 {asana.focus}</p>
+                                <Link to="/start" className="btn-practice-mini">
+                                    Practice Now →
+                                </Link>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Intermediate Tier */}
-                    <div className="tier-card tier-intermediate">
-                        <div className="tier-badge">Intermediate Dynamic</div>
-                        <h3>Cobra, Warrior & Dog</h3>
-                        <p className="tier-desc">Build kinetic chain strength, shoulder endurance, and spinal extension flexibility.</p>
-                        <ul className="tier-list">
-                            <li><strong>Warrior Pose (Virabhadrasana)</strong> — Hip opening & deep lunge</li>
-                            <li><strong>Downward Dog (Adho Mukha)</strong> — Posterior chain stretch</li>
-                            <li><strong>Cobra Pose (Bhujangasana)</strong> — Gentle lumbar & chest expansion</li>
-                        </ul>
-                        <div className="tier-footer">
-                            <Link to="/start" className="tier-link">Practice Intermediates →</Link>
-                        </div>
-                    </div>
-
-                    {/* Expert Tier */}
-                    <div className="tier-card tier-expert">
-                        <div className="tier-badge">Advanced Inversion</div>
-                        <h3>Triangle & Shoulderstand</h3>
-                        <p className="tier-desc">Refine lateral pelvic leveling, hamstring length, and inverted balance control.</p>
-                        <ul className="tier-list">
-                            <li><strong>Triangle Pose (Trikonasana)</strong> — Lateral slope symmetry</li>
-                            <li><strong>Shoulderstand (Sarvangasana)</strong> — Vertical hip elevation & circulation</li>
-                        </ul>
-                        <div className="tier-footer">
-                            <Link to="/start" className="tier-link">Practice Advanced →</Link>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
 

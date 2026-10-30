@@ -208,38 +208,23 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.30) {
 
   switch (poseName) {
     case 'Tree': {
-      // 1. Hands sanity: wrists should be relatively close (e.g. within 0.8 * torso distance)
-      if (wristDist !== null && wristDist > torsoDist * 0.85) {
-        errors.push({ priority: 2, message: 'Bring your palms together in prayer position.' });
+      // 1. Hands sanity: wrists should be relatively close (e.g. within 1.0 * torso distance)
+      if (wristDist !== null && wristDist > torsoDist * 1.05) {
+        errors.push({ priority: 3, message: 'Bring your palms closer into prayer position.' });
         if (lWrist) jointStatus[POINTS.LEFT_WRIST] = 'warning';
         if (rWrist) jointStatus[POINTS.RIGHT_WRIST] = 'warning';
       }
 
-      // 2. Leg sanity: one leg standing (>140°), one leg folded in (<135°)
-      // ALSO: the folded ankle should NOT be kicked far backwards or wildly high in the air
+      // 2. Leg sanity: one leg standing (>135°), one leg folded in (<145°)
+      // Allows natural variation whether foot is at ankle, calf, or inner thigh without false alerts
       if (lKneeAngle !== null && rKneeAngle !== null) {
-        const leftFolded = lKneeAngle < 135 && rKneeAngle > 140;
-        const rightFolded = rKneeAngle < 135 && lKneeAngle > 140;
+        const leftFolded = lKneeAngle < 145 && rKneeAngle > 135;
+        const rightFolded = rKneeAngle < 145 && lKneeAngle > 135;
 
         if (!leftFolded && !rightFolded) {
-          errors.push({ priority: 2, message: 'Rest one foot against your inner standing leg.' });
+          errors.push({ priority: 2, message: 'Bend one knee outward to place foot on standing leg.' });
           jointStatus[POINTS.LEFT_KNEE] = 'warning';
           jointStatus[POINTS.RIGHT_KNEE] = 'warning';
-        } else {
-          // Check that folded ankle is placed inward near the standing knee/thigh (not kicking behind or in air)
-          if (leftFolded && lAnkle && rKnee) {
-            const ankleToStandingKnee = calculateDistance(lAnkle, rKnee);
-            if (ankleToStandingKnee > torsoDist * 1.5) {
-              errors.push({ priority: 2, message: 'Keep folded foot resting against inner standing leg.' });
-              jointStatus[POINTS.LEFT_ANKLE] = 'warning';
-            }
-          } else if (rightFolded && rAnkle && lKnee) {
-            const ankleToStandingKnee = calculateDistance(rAnkle, lKnee);
-            if (ankleToStandingKnee > torsoDist * 1.5) {
-              errors.push({ priority: 2, message: 'Keep folded foot resting against inner standing leg.' });
-              jointStatus[POINTS.RIGHT_ANKLE] = 'warning';
-            }
-          }
         }
       }
       break;

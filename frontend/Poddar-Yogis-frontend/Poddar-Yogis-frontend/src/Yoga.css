@@ -146,6 +146,12 @@
     padding-left: 10px;
 }
 
+.hud-pct-val {
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
 .hud-status-badge {
     padding: 4px 10px;
     border-radius: 9999px;
@@ -306,33 +312,100 @@
 
 /* Pre-practice Selection Screen */
 .pre-practice-container {
-    max-width: 900px;
-    margin: 40px auto;
+    max-width: 960px;
+    margin: 30px auto;
     padding: 0 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
+    gap: 22px;
+}
+
+.pre-practice-header-card {
+    background: rgba(22, 30, 49, 0.7);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 24px 32px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+.studio-pill-tag {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.35);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 8px;
+}
+
+.pre-practice-header-card h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+}
+
+.pre-practice-header-card p {
+    font-size: 14px;
+    color: #94a3b8;
+    margin: 0 0 18px 0;
+    max-width: 600px;
 }
 
 .dropdown-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pose-select-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #cbd5e1;
 }
 
 .pose-dropdown {
     padding: 12px 20px;
-    font-size: 16px;
+    font-size: 15px;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: #0f172a;
     color: #ffffff;
     font-weight: 700;
     outline: none;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.2s;
+}
+
+.pose-dropdown:focus {
+    border-color: #10b981;
+}
+
+.pose-dropdown optgroup {
+    background: #1e293b;
+    color: #38bdf8;
+    font-weight: 800;
+}
+
+.pose-dropdown option {
+    background: #0f172a;
+    color: #f8fafc;
+    font-weight: 500;
+    padding: 6px;
 }
 
 .btn-start-hero {

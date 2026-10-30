@@ -123,6 +123,7 @@ function Yoga() {
   const [isPoseAligned, setIsPoseAligned] = useState(false);
   const [currentCorrection, setCurrentCorrection] = useState(null);
   const [liveAccuracy, setLiveAccuracy] = useState(0);
+  const [liveSteadiness, setLiveSteadiness] = useState(100);
 
   // Post-pose scorecard modal
   const [scorecard, setScorecard] = useState(null);
@@ -138,6 +139,7 @@ function Yoga() {
     rollingWindowRef.current = [];
     stabilityTrackerRef.current.reset();
     breathingEngineRef.current.reset();
+    setLiveSteadiness(100);
     setIsPoseAligned(false);
     setCurrentCorrection(null);
     telemetryRef.current = {
@@ -213,6 +215,7 @@ function Yoga() {
 
         // --- FEATURE 2: STABILITY & MICRO-MOVEMENT ANALYSIS ---
         const stability = stabilityTrackerRef.current.update(keypoints, 0.35);
+        setLiveSteadiness(stability.stabilityPercentage);
 
         // --- BALANCED BIOMECHANICAL EVALUATION (Sanity checks) ---
         const biomech = evaluatePoseBiomechanics(currentPose, keypoints, 0.30);
@@ -232,25 +235,25 @@ function Yoga() {
 
         // --- BALANCED DETECTION ENGINE (ML + Biomechanical Sanity Checks) ---
         let isPoseRecognized = false;
-        let currentAccuracyPct = 80;
+        let currentAccuracyPct = 70;
 
-        if (notDetected <= 4) {
+        if (notDetected <= 5) {
           const data = classifyPose(poseClassifier, input);
           const classNo = CLASS_NO[currentPose];
           const rawScore = data && data[0] ? data[0][classNo] : 0;
 
-          // Rolling 5-frame average with hysteresis
+          // Rolling 4-frame average for fast, responsive detection without lag
           rollingWindowRef.current.push(rawScore);
-          if (rollingWindowRef.current.length > 5) {
+          if (rollingWindowRef.current.length > 4) {
             rollingWindowRef.current.shift();
           }
           const avgScore = rollingWindowRef.current.reduce((a, b) => a + b, 0) / rollingWindowRef.current.length;
           currentAccuracyPct = Math.round(avgScore * 100);
           setLiveAccuracy(currentAccuracyPct);
 
-          // Balanced Detection:
-          // Must achieve good ML confidence (>0.82) AND pass basic sanity checks
-          if (avgScore > 0.94 || (avgScore > 0.82 && biomech.isGeometricallyValid)) {
+          // Forgiving, balanced detection:
+          // Recognizes posture if ML is confident (>0.75) or strong (>0.90)
+          if (avgScore > 0.90 || (avgScore > 0.75 && biomech.isGeometricallyValid)) {
             isPoseRecognized = true;
           }
         }
@@ -299,27 +302,26 @@ function Yoga() {
           }
         });
 
-        // --- DELTA-TIME ACCUMULATION (ELIMINATES 1793358968.5s BUG) ---
+        // --- ACCURATE REAL-TIME POSE TIMER ACCUMULATION ---
         const now = Date.now();
         const deltaSeconds = (now - lastTickTimeRef.current) / 1000;
         lastTickTimeRef.current = now;
 
-        // Cap deltaSeconds to avoid giant jumps if tab was backgrounded
-        const safeDelta = Math.min(0.1, Math.max(0, deltaSeconds));
+        // Cap deltaSeconds to avoid giant jumps if tab was unfocused
+        const safeDelta = Math.min(0.15, Math.max(0, deltaSeconds));
 
         if (isPoseRecognized) {
-          if (!flagRef.current) {
-            countAudio.play().catch((audioErr) => console.warn('Audio notice:', audioErr));
-            flagRef.current = true;
-          }
+          // Accurate timer accumulation - counts continuously and reliably whenever pose is held
+          setPoseTime((prev) => {
+            const updated = prev + safeDelta;
+            setBestPerform((best) => Math.max(best, updated));
+            return updated;
+          });
 
-          // Accumulate strictly in safe increments when stable
-          if (stability.isStable) {
-            setPoseTime((prev) => {
-              const updated = prev + safeDelta;
-              setBestPerform((best) => Math.max(best, updated));
-              return updated;
-            });
+          // Non-blocking tick chime: starts smoothly without blocking the timer
+          if (!flagRef.current) {
+            flagRef.current = true;
+            countAudio.play().catch((audioErr) => console.warn('Audio notice:', audioErr));
           }
 
           if (biomech.topCorrection) {
@@ -488,9 +490,15 @@ function Yoga() {
               <div className="hud-pill">
                 <span className="hud-time-val">⏱️ {poseTime.toFixed(1)}s</span>
                 <span className="hud-best-val">Best: {bestPerform.toFixed(1)}s</span>
+                <span className="hud-pct-val" style={{ color: '#10b981', borderLeft: '1px solid rgba(255,255,255,0.15)', paddingLeft: '8px' }}>
+                  🎯 {liveAccuracy}% Form
+                </span>
+                <span className="hud-pct-val" style={{ color: '#38bdf8' }}>
+                  ⚖️ {liveSteadiness}% Steady
+                </span>
               </div>
               <span className={`hud-status-badge ${isPoseAligned ? 'aligned' : 'adjusting'}`}>
-                {isPoseAligned ? '● Aligned (30 FPS)' : '○ Adjusting Pose'}
+                {isPoseAligned ? '● Aligned (60 FPS)' : '○ Adjusting Pose'}
               </span>
             </div>
 
@@ -540,15 +548,23 @@ function Yoga() {
               />
             </div>
 
-            {/* Real-time mini metrics */}
+            {/* Real-time mini metrics with Accuracy and Steadiness */}
             <div className="target-metrics-mini">
               <div className="mini-stat-item">
-                <span className="mini-stat-label">Accuracy</span>
-                <span className="mini-stat-val">{liveAccuracy}%</span>
+                <span className="mini-stat-label">Pose Accuracy</span>
+                <span className="mini-stat-val" style={{ color: liveAccuracy > 75 ? '#10b981' : '#f59e0b' }}>
+                  {liveAccuracy}%
+                </span>
               </div>
               <div className="mini-stat-item">
-                <span className="mini-stat-label">AI Inference</span>
-                <span className="mini-stat-val" style={{ color: '#10b981' }}>MoveNet (Local)</span>
+                <span className="mini-stat-label">Steadiness</span>
+                <span className="mini-stat-val" style={{ color: liveSteadiness > 80 ? '#38bdf8' : '#f59e0b' }}>
+                  {liveSteadiness}%
+                </span>
+              </div>
+              <div className="mini-stat-item" style={{ gridColumn: 'span 2' }}>
+                <span className="mini-stat-label">AI Engine</span>
+                <span className="mini-stat-val" style={{ color: '#10b981', fontSize: '13px' }}>MoveNet Lightning (Local 60 FPS)</span>
               </div>
             </div>
 
@@ -605,18 +621,33 @@ function Yoga() {
       )}
 
       <div className="pre-practice-container">
-        <div className="dropdown-wrapper">
-          <select
-            value={currentPose}
-            onChange={(e) => setCurrentPose(e.target.value)}
-            className="pose-dropdown"
-          >
-            {(poseList || []).map((pose) => (
-              <option key={pose} value={pose}>
-                {pose} Pose
-              </option>
-            ))}
-          </select>
+        <div className="pre-practice-header-card">
+          <span className="studio-pill-tag">Studio Pose Setup</span>
+          <h2>Select Your Target Asana</h2>
+          <p>Choose an asana below to review the clinical instructions, target form, and launch your practice session.</p>
+          <div className="dropdown-wrapper">
+            <label htmlFor="pose-select" className="pose-select-label">Choose Asana:</label>
+            <select
+              id="pose-select"
+              value={currentPose}
+              onChange={(e) => setCurrentPose(e.target.value)}
+              className="pose-dropdown"
+            >
+              <optgroup label="Beginner Foundational">
+                <option value="Tree">Tree Pose (Vrikshasana) - Beginner</option>
+                <option value="Chair">Chair Pose (Utkatasana) - Beginner</option>
+              </optgroup>
+              <optgroup label="Intermediate Dynamic">
+                <option value="Cobra">Cobra Pose (Bhujangasana) - Intermediate</option>
+                <option value="Warrior">Warrior Pose (Virabhadrasana) - Intermediate</option>
+                <option value="Dog">Downward Dog (Adho Mukha) - Intermediate</option>
+              </optgroup>
+              <optgroup label="Advanced Inversion">
+                <option value="Triangle">Triangle Pose (Trikonasana) - Advanced</option>
+                <option value="Shoulderstand">Shoulderstand (Sarvangasana) - Advanced</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
 
         <Instructions currentPose={currentPose} />
