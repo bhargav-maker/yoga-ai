@@ -1,13 +1,68 @@
+:root {
+  /* UI/UX Pro Max Color Palette */
+  --color-primary: #10b981;
+  --color-primary-glow: rgba(16, 185, 129, 0.35);
+  --color-accent: #f97316;
+  --color-accent-glow: rgba(249, 115, 22, 0.35);
+  --color-cyan: #38bdf8;
+  --color-cyan-glow: rgba(56, 189, 248, 0.3);
+  --color-bg-base: #060911;
+  --color-bg-card: rgba(15, 23, 42, 0.65);
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+
+  /* 3D Spatial Elevation & Shadows */
+  --elevation-1: 0 4px 14px -2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --elevation-2: 0 12px 28px -6px rgba(0, 0, 0, 0.65), 0 0 20px rgba(16, 185, 129, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  --elevation-3: 0 20px 45px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  --elevation-3d: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 8px 16px -4px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  /* Glassmorphism */
+  --glass-backdrop: blur(16px);
+  --glass-surface: rgba(15, 23, 42, 0.72);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+  background: var(--color-bg-base);
+  color: var(--color-text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom 3D Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+  border: 2px solid #090d16;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, monospace;
 }

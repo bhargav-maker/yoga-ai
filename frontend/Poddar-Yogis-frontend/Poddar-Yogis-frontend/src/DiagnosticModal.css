@@ -1,4 +1,4 @@
-/* Diagnostic Modal Styles */
+/* 3D Diagnostic Modal Styles (UI/UX Pro Max) */
 
 .diagnostic-modal-backdrop {
   position: fixed;
@@ -6,42 +6,51 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(3, 7, 18, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10000;
-  padding: 16px;
+  padding: 20px;
   overflow-y: auto;
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.25s ease-out;
+  perspective: 1200px;
 }
 
 .diagnostic-modal-card {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
   width: 100%;
-  max-width: 560px;
+  max-width: 580px;
   max-height: 90vh;
-  padding: 24px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+  padding: 28px;
+  box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: #f8fafc;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  animation: scaleUp 0.2s ease-out;
+  gap: 18px;
+  animation: scaleUp3D 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  transform-style: preserve-3d;
+}
+
+@keyframes scaleUp3D {
+  from { transform: scale(0.92) translateY(20px) rotateX(4deg); opacity: 0; }
+  to { transform: scale(1) translateY(0) rotateX(0deg); opacity: 1; }
 }
 
 .modal-auto-timer {
   background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12.5px;
   color: #34d399;
   text-align: center;
+  font-weight: 600;
 }
 
 .timer-paused {
@@ -56,39 +65,49 @@
 
 .modal-pre-title {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
   color: #10b981;
+  text-transform: uppercase;
 }
 
 .modal-title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
-  margin-top: 2px;
+  margin: 4px 0 0 0;
+  font-family: 'Outfit', sans-serif;
+  color: #ffffff;
 }
 
 .modal-close-btn {
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #94a3b8;
-  font-size: 26px;
-  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .modal-close-btn:hover {
-  color: #f8fafc;
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 /* Scrollable Container */
 .modal-scroll-body {
   overflow-y: auto;
   max-height: calc(90vh - 170px);
-  padding-right: 6px;
+  padding-right: 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .modal-scroll-body::-webkit-scrollbar {
@@ -100,20 +119,21 @@
   border-radius: 4px;
 }
 
-/* Score Hero */
+/* 3D Score Hero */
 .modal-hero {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 22px;
   background: rgba(255, 255, 255, 0.04);
-  padding: 14px 18px;
-  border-radius: 14px;
+  padding: 18px 22px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .score-circle {
-  width: 76px;
-  height: 76px;
+  width: 82px;
+  height: 82px;
   border-radius: 50%;
   border: 4px solid #10b981;
   display: flex;
@@ -121,13 +141,15 @@
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
 }
 
 .score-number {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 800;
   line-height: 1;
+  font-family: 'Outfit', sans-serif;
 }
 
 .score-max {

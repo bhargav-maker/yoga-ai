@@ -1,25 +1,26 @@
-/* Modern Dark Studio About Screen */
+/* 3D Modern Studio About Screen (UI/UX Pro Max) */
 .about-container {
     width: 100vw;
     min-height: 100vh;
-    background: #090d16;
+    background: #060911;
     background-image: 
       radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 55%),
-      radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.12) 0px, transparent 55%),
-      radial-gradient(at 50% 50%, rgba(15, 23, 42, 1) 0px, rgba(9, 13, 22, 1) 100%);
+      radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.12) 0px, transparent 55%),
+      radial-gradient(at 50% 50%, rgba(15, 23, 42, 1) 0px, rgba(6, 9, 17, 1) 100%);
     color: #f8fafc;
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding-bottom: 60px;
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    padding-bottom: 80px;
     box-sizing: border-box;
+    perspective: 1200px;
 }
 
 .about-nav-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 40px;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(14px);
+    padding: 20px 48px;
+    background: rgba(6, 9, 17, 0.7);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -28,114 +29,139 @@
     text-decoration: none;
     font-size: 14px;
     font-weight: 700;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .about-back-link:hover {
-    color: #ffffff;
+    color: #34d399;
+    transform: translateX(-3px);
 }
 
 .about-logo-badge {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     color: #10b981;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    padding: 4px 12px;
+    background: rgba(16, 185, 129, 0.14);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 6px 14px;
     border-radius: 9999px;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
 }
 
 .about-main-wrapper {
-    max-width: 1000px;
-    margin: 40px auto 0 auto;
+    max-width: 1040px;
+    margin: 48px auto 0 auto;
     padding: 0 24px;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 34px;
+    transform-style: preserve-3d;
 }
 
 .about-hero-card {
-    background: rgba(22, 30, 49, 0.65);
-    backdrop-filter: blur(16px);
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 36px 40px;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    border-radius: 26px;
+    padding: 42px 48px;
+    box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .about-tag {
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     color: #38bdf8;
     text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .about-heading {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 800;
     color: #ffffff;
-    margin: 10px 0 16px 0;
-    letter-spacing: -0.5px;
+    margin: 0 0 16px 0;
+    letter-spacing: -0.8px;
+    font-family: 'Outfit', sans-serif;
 }
 
 .about-intro {
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 17px;
+    line-height: 1.65;
     color: #94a3b8;
-    max-width: 850px;
+    max-width: 900px;
+    margin: 0;
 }
 
 .about-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    gap: 24px;
+    transform-style: preserve-3d;
 }
 
 .about-card {
     background: rgba(15, 23, 42, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 20px;
-    padding: 24px;
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    transition: transform 0.2s, border-color 0.2s;
+    gap: 12px;
+    box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .about-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-6px) scale(1.02);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 22px 45px -10px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.18);
 }
 
 .about-card-icon {
-    font-size: 28px;
+    font-size: 32px;
+    background: rgba(255, 255, 255, 0.04);
+    width: 58px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .about-card h3 {
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 800;
     color: #ffffff;
     margin: 0;
+    font-family: 'Outfit', sans-serif;
 }
 
 .about-card p {
-    font-size: 13.5px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.55;
     color: #94a3b8;
     margin: 0;
 }
 
 .about-footer-card {
-    background: rgba(22, 30, 49, 0.65);
+    background: rgba(15, 23, 42, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 24px 32px;
+    backdrop-filter: blur(16px);
+    border-radius: 22px;
+    padding: 28px 36px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
+    box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.6);
 }
 
 .team-info h3 {
