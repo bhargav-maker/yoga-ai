@@ -12,7 +12,7 @@
 - **Core Purpose**: Real-time AI yoga posture evaluation, joint-level skeleton alignment, hold-time tracking, breathing synchronization, and clinical-grade physical therapy diagnostics running 100% locally in web browsers.
 - **Current Competition Status**:
   - 🥇 **Sub-Divisional Level**: **WON / 1st Place** (Successfully cleared and won!)
-  - 🎯 **District Level**: **Active Target / Fully Prepared** with balanced pose detection, authentic clean skeleton UI, and 10s auto-closing IndexedDB analytics!
+  - 🎯 **District Level**: **Active Target / Fully Prepared** with modern dark glassmorphism design, balanced pose detection, bar/line charts, and 10s auto-closing IndexedDB analytics!
   - 🚀 **State Level**: Future horizon upon winning District.
 
 ---
@@ -48,16 +48,19 @@
   - [`src/utils/scorecard.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/utils/scorecard.js) (Rating math & clinical prescriptions)
   - [`src/utils/db.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/utils/db.js) (Browser IndexedDB client-side database)
   - [`src/DiagnosticModal.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/DiagnosticModal.js) (10s auto-closing popup, touch/click to pause, fully scrollable)
-  - [`src/Progress.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/Progress.js) (Dedicated analytics page with JSON export, naturally scrollable)
+  - [`src/Progress.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/Progress.js) (Dedicated analytics page with interactive SVG line chart & accuracy bar graph)
 - **Auto-Dismiss**: When you stop a pose, the scorecard displays for 10 seconds. If untouched, it automatically dismisses and saves to IndexedDB. If clicked/touched, it pauses the countdown and lets the user scroll freely.
 
-### 7. 🛡️ Balanced Detection (Not Overly Strict, Not Fake)
-- **Engine**: [`src/utils/biomechanics.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/utils/biomechanics.js) & [`src/Yoga.js`](./frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend/src/Yoga.js)
+### 7. 🛡️ Balanced Detection & Fixed Delta-Timer
+- **Fixed Timer Bug**: Replaced raw timestamp subtraction with delta-time frame accumulation (`lastTickTimeRef`), preventing any `1793358968.5s` epoch time calculation bugs.
 - **Balanced Sweet Spot**:
   - Rejects obvious false postures (e.g., in Tree pose, hands separated wide apart or foot kicked behind/in the air will **not** pass).
   - Does NOT demand robotic millimeter perfection (minor height or angle variations are accepted smoothly at $>0.82$ with geometric sanity or $>0.94$ overall).
   - **Full Anatomical Skeleton**: Bone connections are drawn first, joints are drawn on top, ensuring legs connect to hips and hands connect to wrists without broken lines.
-  - **Restored Old Clean UI**: The camera practice screen retains the exact original clean layout (original timer boxes, target image on right, Stop Pose button, clean skeleton).
+- **Modern Unified Dark Studio UI**:
+  - Top HUD pill with hold time, best time, and alignment indicator.
+  - Floating live correction toast inside the camera card.
+  - Sidebar with uncropped target pose image (`object-fit: contain`), real-time accuracy, and AI model badge.
 
 ---
 
@@ -94,14 +97,16 @@ yoga-ai/
             │   ├── index.html           <-- Root HTML
             │   └── model/               <-- Offline bundled TF.js model weights
             ├── src/
-            │   ├── Yoga.js              <-- Studio: Clean Old UI + Balanced Detection + Full Skeleton
+            │   ├── Yoga.js              <-- Studio: Modern Camera Stage + HUD Pill + Live Toast + Safe Delta Timer
             │   ├── DiagnosticModal.js   <-- 10-Second Auto-Closing Scorecard (Scrollable)
             │   ├── DiagnosticModal.css  <-- Modal styles & scroll containers
-            │   ├── Progress.js          <-- Historical analytics & session telemetry page (Scrollable)
-            │   ├── Progress.css         <-- Progress page styling
-            │   ├── Home.js              <-- Landing screen with Analytics link
+            │   ├── Progress.js          <-- Analytics Dashboard with Bar Graph & SVG Line Chart
+            │   ├── Progress.css         <-- Modern Progress page styling
+            │   ├── Home.js              <-- Modern Landing Screen with Asana Tiers (Beginner, Intermediate, Advanced)
+            │   ├── Home.css             <-- Dark theme landing page styles
+            │   ├── Tutorials.js         <-- Asana Masterclass with all 7 poses, guides & camera tips
+            │   ├── Tutorials.css        <-- Tutorials page styles
             │   ├── Instructions.js      <-- Pose guidelines
-            │   ├── Tutorials.js         <-- Visual pose library
             │   ├── About.js             <-- Project & Team details
             │   └── utils/
             │       ├── biomechanics.js  <-- Balanced sanity checks, slope symmetry, hyperextension, EMA
@@ -126,24 +131,19 @@ yoga-ai/
 
 2. **Live Demonstration (1–2m)**:
    - Double click [`start.bat`](./start.bat) or [`yoga.bat`](./yoga.bat).
-   - Click **Let's Start**, select **Tree Pose**, click **Start Pose**.
-   - Note the **Clean Original UI**: clean canvas, timer on top-left, target pose on right.
+   - Show the **Modern Landing Page**: Point out the structured tiers: Beginner (Tree, Chair), Intermediate (Cobra, Warrior, Dog), and Advanced (Triangle, Shoulderstand).
+   - Click **Start Yoga Practice**, select **Tree Pose**, click **Start Tree Pose**.
+   - Note the **Modern Camera Studio**: clean HUD pill showing real-time hold time and alignment status.
+   - Note the **Target Sidebar**: The target pose image is displayed fully without being cut off (`object-fit: contain`).
+   - If form slips, point out the **in-frame correction toast** at the bottom of the camera box.
    - Point out the **Pulsing Neon Breathing Ring** on the chest smoothly expanding on Inhale and contracting on Exhale.
-   - Separate hands or kick leg backwards: show that the app **correctly refuses to pass fake poses**.
-   - Bring hands together and rest foot against the inner thigh: the skeleton turns **vivid green**, chime plays, and hold time increments.
-   - Lock knee: note the **red warning highlight** on the joint.
+   - Show that kicking a leg backwards or separating hands will **not pass**. Settle into alignment: the skeleton turns **vivid green**, chime plays, and hold time increments smoothly.
 
-3. **Auto-Closing Scorecard & IndexedDB (45s)**:
-   - Click **Stop Pose**.
+3. **Auto-Closing Scorecard & Analytics Charts (45s)**:
+   - Click **Stop Pose & View Report 📋**.
    - The **Diagnostic Scorecard** pops up showing the 10-second auto-close countdown.
    - Click the card to pause auto-close and scroll through the metrics and physical therapy advice.
-   - Click **View All Progress Reports →** to show the **IndexedDB Analytics Dashboard** (`/progress`).
-   - Click **Export JSON Report 📥** to download telemetry for judges.
-
----
-
-## ⚡ Instructions for Future AI Agents
-
-1. **Keep the Old Skeleton UI clean**: Do not clutter the active webcam screen with unnecessary banners or badges.
-2. **Preserve Balanced Detection**: Keep the combination of neural network confidence + geometric sanity checks (wrist proximity, folded leg placement) so poses cannot be faked while remaining accessible.
-3. **Build Validation**: Always verify changes by running `npm --prefix frontend/Poddar-Yogis-frontend/Poddar-Yogis-frontend run build`. The build must compile with exit code 0.
+   - Click **View All Progress Reports →** to show the **Analytics Dashboard** (`/progress`):
+     - **Pose Accuracy Bar Graph**: Shows average score across each asana.
+     - **Performance Trend Line Chart**: Clean SVG chart showing historical scores over time.
+   - Click **Export JSON 📥** to download telemetry for judges.
