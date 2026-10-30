@@ -1,23 +1,253 @@
+/* Modern Dark Tutorials Styles */
+
 .tutorials-container {
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(100deg, #FF8C00, #FFA500);
-}
-.tutorials-heading {
-    font-size: 54px;
-    margin-left: 100px;
-    padding-top: 50px;
-    color: white;
-    font-family: 'Raleway', sans-serif;
+    min-height: 100vh;
+    background: #090d16;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 50%);
+    color: #f8fafc;
+    padding: 40px 60px;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    box-sizing: border-box;
 }
 
-.tutorials-content {
-    color: white;
-    font-size: 18px;
-    margin: auto;
-    margin-left: 100px;
-    margin-top: 4px;
+.tutorials-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 24px;
+    margin-bottom: 36px;
 }
-.tutorials-content-container {
-    width: 70%;
+
+.tutorials-back-link {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 8px;
+    transition: opacity 0.2s;
+}
+
+.tutorials-back-link:hover {
+    opacity: 0.8;
+}
+
+.tutorials-main-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.tutorials-sub-desc {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+/* Poses Grid */
+.tutorials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.tutorial-pose-card {
+    background: rgba(22, 30, 49, 0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.tutorial-pose-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+.pose-card-media {
+    position: relative;
+    height: 220px;
+    background: rgba(15, 23, 42, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 12px;
+}
+
+.tutorial-img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.pose-tier-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tier-beginner {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.tier-intermediate {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+    border: 1px solid rgba(14, 165, 233, 0.4);
+}
+
+.tier-advanced {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.pose-card-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 14px;
+}
+
+.pose-title-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pose-title-wrap h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+}
+
+.sanskrit-name {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.pose-focus {
+    font-size: 12.5px;
+    color: #38bdf8;
+    background: rgba(14, 165, 233, 0.08);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(14, 165, 233, 0.15);
+}
+
+.instructions-list-wrap h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 0 0 8px 0;
+    letter-spacing: 0.5px;
+}
+
+.pose-steps-list {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pose-steps-list li {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.45;
+}
+
+.btn-practice-pose {
+    margin-top: auto;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.btn-practice-pose:hover {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.35);
+}
+
+/* Camera Help Card */
+.camera-help-card {
+    background: rgba(22, 30, 49, 0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+.camera-help-card h3 {
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 18px 0;
+    color: #ffffff;
+}
+
+.camera-tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.camera-tip-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.tip-num {
+    font-size: 14px;
+    font-weight: 800;
+    color: #10b981;
+}
+
+.camera-tip-item p {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 0;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .tutorials-container {
+        padding: 24px 20px;
+    }
+    .tutorials-grid {
+        grid-template-columns: 1fr;
+    }
 }

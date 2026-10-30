@@ -112,8 +112,6 @@ function Yoga() {
   });
 
   // State
-  const [startingTime, setStartingTime] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
   const [poseTime, setPoseTime] = useState(0);
   const [bestPerform, setBestPerform] = useState(0);
   const [currentPose, setCurrentPose] = useState('Tree');
@@ -121,23 +119,18 @@ function Yoga() {
   const [isModelLoading, setIsModelLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
+  // Live posture state & feedback
+  const [isPoseAligned, setIsPoseAligned] = useState(false);
+  const [currentCorrection, setCurrentCorrection] = useState(null);
+  const [liveAccuracy, setLiveAccuracy] = useState(0);
+
   // Post-pose scorecard modal
   const [scorecard, setScorecard] = useState(null);
 
-  // Synchronize timer with flag
-  useEffect(() => {
-    const timeDiff = (currentTime - startingTime) / 1000;
-    if (flagRef.current) {
-      setPoseTime(timeDiff);
-      if (timeDiff > bestPerform) {
-        setBestPerform(timeDiff);
-      }
-    }
-  }, [currentTime, startingTime, bestPerform]);
+  // Strict delta tracking to completely eliminate the 1793358968.5s epoch time bug
+  const lastTickTimeRef = useRef(Date.now());
 
   useEffect(() => {
-    setCurrentTime(0);
-    setStartingTime(0);
     setPoseTime(0);
     setBestPerform(0);
     flagRef.current = false;
@@ -145,6 +138,8 @@ function Yoga() {
     rollingWindowRef.current = [];
     stabilityTrackerRef.current.reset();
     breathingEngineRef.current.reset();
+    setIsPoseAligned(false);
+    setCurrentCorrection(null);
     telemetryRef.current = {
       stabilityScores: [],
       symmetryScores: [],
@@ -219,8 +214,9 @@ function Yoga() {
         // --- FEATURE 2: STABILITY & MICRO-MOVEMENT ANALYSIS ---
         const stability = stabilityTrackerRef.current.update(keypoints, 0.35);
 
-        // --- BALANCED BIOMECHANICAL EVALUATION (Sanity checks, not robotic strictness) ---
+        // --- BALANCED BIOMECHANICAL EVALUATION (Sanity checks) ---
         const biomech = evaluatePoseBiomechanics(currentPose, keypoints, 0.30);
+        setCurrentCorrection(biomech.topCorrection);
 
         // --- FEATURE 5: CLEAN PRANAYAMA BREATHING AURA ---
         const lSh = keypoints[POINTS.LEFT_SHOULDER];
@@ -250,14 +246,15 @@ function Yoga() {
           }
           const avgScore = rollingWindowRef.current.reduce((a, b) => a + b, 0) / rollingWindowRef.current.length;
           currentAccuracyPct = Math.round(avgScore * 100);
+          setLiveAccuracy(currentAccuracyPct);
 
           // Balanced Detection:
-          // Must achieve good ML confidence (>0.82) AND pass basic sanity checks (e.g. hands clasped in tree)
-          // If ML is very high (>0.94), it passes smoothly.
+          // Must achieve good ML confidence (>0.82) AND pass basic sanity checks
           if (avgScore > 0.94 || (avgScore > 0.82 && biomech.isGeometricallyValid)) {
             isPoseRecognized = true;
           }
         }
+        setIsPoseAligned(isPoseRecognized);
 
         // --- SKELETON DRAWING (Full Anatomical Connections) ---
         // 1. Draw bones first
@@ -268,8 +265,7 @@ function Yoga() {
               connections.forEach((conn) => {
                 const targetIdx = POINTS[conn.toUpperCase()];
                 if (targetIdx !== undefined && keypoints[targetIdx] && keypoints[targetIdx].score > 0.25) {
-                  let lineColor = isPoseRecognized ? 'rgb(0, 255, 0)' : 'rgb(255, 255, 255)';
-                  // Red line if joint has hyperextension alert
+                  let lineColor = isPoseRecognized ? 'rgb(16, 185, 129)' : 'rgba(255, 255, 255, 0.7)';
                   if (biomech.jointStatus[idx] === 'error' || biomech.jointStatus[targetIdx] === 'error') {
                     lineColor = 'rgb(239, 68, 68)';
                   }
@@ -288,10 +284,9 @@ function Yoga() {
         // 2. Draw joints over bones
         keypoints.forEach((kp, idx) => {
           if (kp.score > 0.30 && !(kp.name === 'left_eye' || kp.name === 'right_eye')) {
-            let ptColor = isPoseRecognized ? 'rgb(0, 255, 0)' : 'rgb(255, 255, 255)';
+            let ptColor = isPoseRecognized ? 'rgb(16, 185, 129)' : 'rgb(255, 255, 255)';
             let ptSize = 7;
 
-            // Highlight hyperextended joint in red
             if (biomech.jointStatus[idx] === 'error') {
               ptColor = 'rgb(239, 68, 68)';
               ptSize = 10;
@@ -304,25 +299,33 @@ function Yoga() {
           }
         });
 
-        // --- TIMER & AUDIO FEEDBACK LOGIC ---
+        // --- DELTA-TIME ACCUMULATION (ELIMINATES 1793358968.5s BUG) ---
+        const now = Date.now();
+        const deltaSeconds = (now - lastTickTimeRef.current) / 1000;
+        lastTickTimeRef.current = now;
+
+        // Cap deltaSeconds to avoid giant jumps if tab was backgrounded
+        const safeDelta = Math.min(0.1, Math.max(0, deltaSeconds));
+
         if (isPoseRecognized) {
           if (!flagRef.current) {
             countAudio.play().catch((audioErr) => console.warn('Audio notice:', audioErr));
-            setStartingTime(new Date().getTime());
             flagRef.current = true;
           }
 
-          // Accumulate time if stable (or normal timer)
+          // Accumulate strictly in safe increments when stable
           if (stability.isStable) {
-            setCurrentTime(new Date().getTime());
+            setPoseTime((prev) => {
+              const updated = prev + safeDelta;
+              setBestPerform((best) => Math.max(best, updated));
+              return updated;
+            });
           }
 
-          // Gentle voice guidance for any priority posture corrections
           if (biomech.topCorrection) {
             audioCoach.speak(biomech.topCorrection);
           }
 
-          // Telemetry
           telemetryRef.current.stabilityScores.push(stability.stabilityPercentage);
           telemetryRef.current.symmetryScores.push(biomech.symmetry.isSymmetric ? 95 : 75);
           telemetryRef.current.accuracyScores.push(currentAccuracyPct);
@@ -337,7 +340,6 @@ function Yoga() {
           countAudio.pause();
           countAudio.currentTime = 0;
 
-          // If user is attempting pose, provide verbal guidance
           if (biomech.topCorrection && notDetected <= 3) {
             audioCoach.speak(biomech.topCorrection);
           }
@@ -361,6 +363,7 @@ function Yoga() {
     if (detectorRef.current && classifierRef.current) {
       if (!isPreload) {
         setIsModelLoading(false);
+        lastTickTimeRef.current = Date.now();
         scheduleNextDetection(detectorRef.current, classifierRef.current, countAudioRef.current);
       }
       return;
@@ -404,6 +407,7 @@ function Yoga() {
 
       setIsModelLoading(false);
       if (!isPreload) {
+        lastTickTimeRef.current = Date.now();
         scheduleNextDetection(detector, poseClassifier, countAudio);
       }
     } catch (err) {
@@ -418,6 +422,7 @@ function Yoga() {
   function startYoga() {
     setIsStartPose(true);
     setScorecard(null);
+    lastTickTimeRef.current = Date.now();
     breathingEngineRef.current.reset();
     stabilityTrackerRef.current.reset();
 
@@ -442,7 +447,7 @@ function Yoga() {
     audioCoach.stop();
     flagRef.current = false;
 
-    // --- FEATURE 6: GENERATE & SAVE AUTOMATED DIAGNOSTIC SCORECARD ---
+    // Save diagnostic scorecard
     if (poseTime > 1.0) {
       const card = computeSessionScorecard({
         poseName: currentPose,
@@ -459,76 +464,118 @@ function Yoga() {
     }
   }
 
-  // --- EXACT ORIGINAL CLEAN SKELETON SCREEN UI ---
+  // --- MODERN AI STUDIO VIEW ---
   if (isStartPose) {
     return (
       <div className="yoga-container">
-        <div className="performance-container">
-          <div className="pose-performance">
-            <h4>Pose Time: {poseTime.toFixed(1)} s</h4>
+        {/* Navigation Bar */}
+        <nav className="studio-nav-bar">
+          <Link to="/" className="studio-logo">
+            <span>🧘</span> Yoga AI Studio
+          </Link>
+          <div className="studio-nav-links">
+            <Link to="/progress" className="studio-link">📊 Analytics</Link>
+            <Link to="/tutorials" className="studio-link">📖 Tutorials</Link>
           </div>
-          <div className="pose-performance">
-            <h4>Best: {bestPerform.toFixed(1)} s</h4>
+        </nav>
+
+        {/* Studio Stage */}
+        <div className="studio-stage">
+          {/* Main Camera Card */}
+          <div className="camera-frame-card">
+            {/* Top HUD Pill */}
+            <div className="camera-hud-overlay">
+              <div className="hud-pill">
+                <span className="hud-time-val">⏱️ {poseTime.toFixed(1)}s</span>
+                <span className="hud-best-val">Best: {bestPerform.toFixed(1)}s</span>
+              </div>
+              <span className={`hud-status-badge ${isPoseAligned ? 'aligned' : 'adjusting'}`}>
+                {isPoseAligned ? '● Aligned (30 FPS)' : '○ Adjusting Pose'}
+              </span>
+            </div>
+
+            {/* Video & Skeleton Canvas */}
+            <Webcam
+              width={640}
+              height={480}
+              id="webcam"
+              ref={webcamRef}
+              videoConstraints={{
+                width: 640,
+                height: 480,
+                facingMode: 'user',
+              }}
+            />
+            <canvas
+              ref={canvasRef}
+              id="my-canvas"
+              width={640}
+              height={480}
+            />
+
+            {/* In-Frame Correction Toast */}
+            {currentCorrection && (
+              <div className="camera-correction-toast">
+                <span className="correction-icon">⚠️</span>
+                <p className="correction-msg">{currentCorrection}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Target Reference Sidebar */}
+          <div className="target-sidebar-card">
+            <div className="target-header">
+              <div>
+                <span className="target-label">Target Pose</span>
+                <h3 className="target-name">{currentPose} Pose</h3>
+              </div>
+            </div>
+
+            {/* Fully uncropped reference pose image */}
+            <div className="pose-img-container">
+              <img 
+                src={poseImages[currentPose]} 
+                className="pose-img" 
+                alt={`${currentPose} target guidance`} 
+              />
+            </div>
+
+            {/* Real-time mini metrics */}
+            <div className="target-metrics-mini">
+              <div className="mini-stat-item">
+                <span className="mini-stat-label">Accuracy</span>
+                <span className="mini-stat-val">{liveAccuracy}%</span>
+              </div>
+              <div className="mini-stat-item">
+                <span className="mini-stat-label">AI Inference</span>
+                <span className="mini-stat-val" style={{ color: '#10b981' }}>MoveNet (Local)</span>
+              </div>
+            </div>
+
+            <button onClick={stopPose} className="btn-stop-pose">
+              Stop Pose & View Report 📋
+            </button>
           </div>
         </div>
 
         {isModelLoading && (
           <div className="starting-contdown">
-            <h1>Loading model...</h1>
+            <h1>Initializing MoveNet Vision Model...</h1>
           </div>
         )}
 
         {loadError && (
-          <div className="starting-contdown" style={{ borderRadius: '12px', maxWidth: '80%', padding: '16px' }}>
+          <div className="starting-contdown" style={{ borderRadius: '14px', maxWidth: '80%' }}>
             <h1>{loadError}</h1>
             <button
               onClick={runMovenet}
-              className="secondary-btn"
-              style={{ position: 'static', margin: '15px auto', display: 'block' }}
+              className="btn-start-hero"
+              style={{ padding: '8px 20px', fontSize: '14px', marginTop: '10px' }}
             >
-              Retry Loading Model
+              Retry
             </button>
           </div>
         )}
-
-        <div>
-          <Webcam
-            width={640}
-            height={480}
-            id="webcam"
-            ref={webcamRef}
-            videoConstraints={{
-              width: 640,
-              height: 480,
-              facingMode: 'user',
-            }}
-            style={{
-              position: 'absolute',
-              left: 120,
-              top: 100,
-              padding: '0px',
-            }}
-          />
-          <canvas
-            ref={canvasRef}
-            id="my-canvas"
-            width={640}
-            height={480}
-            style={{
-              position: 'absolute',
-              left: 120,
-              top: 100,
-              zIndex: 1,
-            }}
-          />
-          <div>
-            <img src={poseImages[currentPose]} className="pose-img" alt="Pose Target" />
-          </div>
-        </div>
-
-        <button onClick={stopPose} className="secondary-btn">
-          Stop Pose
-        </button>
       </div>
     );
   }
@@ -538,7 +585,9 @@ function Yoga() {
     <div className="yoga-container">
       {/* Studio Navigation Bar */}
       <nav className="studio-nav-bar">
-        <Link to="/" className="studio-logo">Poddar Yogis</Link>
+        <Link to="/" className="studio-logo">
+          <span>🧘</span> Yoga AI Studio
+        </Link>
         <div className="studio-nav-links">
           <Link to="/progress" className="studio-link">📊 Analytics & History</Link>
           <Link to="/tutorials" className="studio-link">📖 Tutorials</Link>
@@ -555,25 +604,27 @@ function Yoga() {
         />
       )}
 
-      <div className="dropdown-wrapper">
-        <select
-          value={currentPose}
-          onChange={(e) => setCurrentPose(e.target.value)}
-          className="pose-dropdown"
-        >
-          {(poseList || []).map((pose) => (
-            <option key={pose} value={pose}>
-              {pose}
-            </option>
-          ))}
-        </select>
+      <div className="pre-practice-container">
+        <div className="dropdown-wrapper">
+          <select
+            value={currentPose}
+            onChange={(e) => setCurrentPose(e.target.value)}
+            className="pose-dropdown"
+          >
+            {(poseList || []).map((pose) => (
+              <option key={pose} value={pose}>
+                {pose} Pose
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Instructions currentPose={currentPose} />
+
+        <button onClick={startYoga} className="btn-start-hero">
+          Start {currentPose} Pose 🧘
+        </button>
       </div>
-
-      <Instructions currentPose={currentPose} />
-
-      <button onClick={startYoga} className="secondary-btn" style={{ marginTop: '20px' }}>
-        Start Pose
-      </button>
     </div>
   );
 }

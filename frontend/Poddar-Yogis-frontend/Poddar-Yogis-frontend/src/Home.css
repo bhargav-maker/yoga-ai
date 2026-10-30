@@ -1,92 +1,332 @@
+/* Modern Dark Aesthetic Landing Page */
+
+.home-container {
+    background: #090d16;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 55%),
+      radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.15) 0px, transparent 55%),
+      radial-gradient(at 50% 50%, rgba(15, 23, 42, 1) 0px, rgba(9, 13, 22, 1) 100%);
+    min-height: 100vh;
+    color: #f8fafc;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+    padding-bottom: 60px;
+}
+
+/* Header */
 .home-header {
-    background: linear-gradient(100deg,#FF8C00, #FFA500);
-    width: 100vw;
-    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 48px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.home-logo-wrap {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
 }
-.home-container {
-    background: black;
-}
-.header-btn:hover {
-    border-color: white;
+
+.home-logo-icon {
+    font-size: 28px;
 }
 
 .home-heading {
-    padding: 0px;
-    margin: 0px;
-    font-size: 44px;
-    margin-left: 30px;
-    color: white;
-    font-family: 'Kaushan Script', cursive;
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.5px;
+    color: #ffffff;
 }
 
-.home-main {
-    margin: auto;
-    margin-top: -50px;
-    width: 100vw;
-    height: 100vh;    
-    /* Path points directly to utils since src/ is now flat */
-    background: linear-gradient(rgba(0,0,0,0.2), rgba(0, 0, 0, 0.8)), url('./utils/images/yoga_pose.png') ;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size:  750px;
-}
-
-.description {
-    font-size: 66px;
-    color: white;
-    text-align: center;
-    margin: 0px;
-    margin-top: 10px;
-    font-family: 'Raleway', sans-serif;
+.home-badge {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 9999px;
     letter-spacing: 0.5px;
 }
 
-.btn-section {
-    position: absolute;
-    left: 0;
-    width: 100vw;
-    top: 60vh;
+.home-nav-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.nav-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+    padding: 8px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Hero Section */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 80px 24px 50px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    background: rgba(14, 165, 233, 0.15);
+    border: 1px solid rgba(14, 165, 233, 0.4);
+    color: #38bdf8;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    margin-bottom: 24px;
+}
+
+.hero-title {
+    font-size: 54px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    margin: 0 0 20px 0;
+    color: #ffffff;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+    font-size: 17px;
+    color: #94a3b8;
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 0 36px 0;
+}
+
+.hero-cta-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-hero-primary {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    transition: all 0.2s;
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 26px rgba(16, 185, 129, 0.5);
+}
+
+.btn-hero-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-hero-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Tiers Section */
+.poses-showcase-section {
+    max-width: 1200px;
+    margin: 40px auto 60px auto;
+    padding: 0 24px;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.section-header p {
+    color: #94a3b8;
+    font-size: 15px;
+}
+
+.tier-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+.tier-card {
+    background: rgba(22, 30, 49, 0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.tier-card:hover {
+    transform: translateY(-3px);
+}
+
+.tier-beginner {
+    border-top: 4px solid #10b981;
+}
+
+.tier-intermediate {
+    border-top: 4px solid #0ea5e9;
+}
+
+.tier-expert {
+    border-top: 4px solid #a855f7;
+}
+
+.tier-badge {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 12px;
+}
+
+.tier-beginner .tier-badge { color: #10b981; }
+.tier-intermediate .tier-badge { color: #0ea5e9; }
+.tier-expert .tier-badge { color: #a855f7; }
+
+.tier-card h3 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+
+.tier-desc {
+    font-size: 13.5px;
+    color: #94a3b8;
+    line-height: 1.5;
+    margin: 0 0 18px 0;
+}
+
+.tier-list {
+    margin: 0 0 24px 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tier-list li {
+    font-size: 13px;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+
+.tier-footer {
+    margin-top: auto;
+}
+
+.tier-link {
+    color: #10b981;
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.tier-link:hover {
+    opacity: 0.8;
+}
+
+/* Tech Highlights */
+.tech-highlights-section {
     display: flex;
     justify-content: center;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px;
     flex-wrap: wrap;
-    gap: 15px;
 }
 
-.btn{
-    padding: 10px;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin: 10px 20px 10px 20px;
-    background-color: rgba(255, 255, 255, 0);
-    color: white;
+.highlight-pill {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 14px 22px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.pill-icon {
     font-size: 24px;
-    border-color: #FFA500;
-    border-radius: 8px;
-    border-width: 4px;
-    cursor: pointer;
-}
-.btn:hover {
-    background: rgba(255,165,0, 0.2);
-    color: white;
 }
 
-body::-webkit-scrollbar {
-    display: none;
+.highlight-pill div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
-#about-btn {
-    padding: 5px 10px;
+
+.highlight-pill strong {
+    font-size: 13.5px;
+    color: #ffffff;
 }
-#about-btn:hover {
-    border-color: white;
-    background-color: white;
-    color: black;
+
+.highlight-pill span {
+    font-size: 12px;
+    color: #94a3b8;
 }
-#about-btn:focus {
-    box-shadow: none;
-    background: white;
-    border-color: white;
-    color: black;
+
+@media (max-width: 768px) {
+    .home-header {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .hero-title {
+        font-size: 36px;
+    }
+    .tier-cards-grid {
+        grid-template-columns: 1fr;
+    }
 }
