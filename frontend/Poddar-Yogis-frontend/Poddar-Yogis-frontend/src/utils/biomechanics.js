@@ -64,7 +64,7 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(lHip, lKnee, lAnkle);
     if (angle !== null) {
       joints.leftKneeAngle = angle;
-      if (angle >= 178) {
+      if (angle >= 184) {
         alerts.push({
           joint: 'Left Knee',
           jointIndex: POINTS.LEFT_KNEE,
@@ -84,7 +84,7 @@ export function checkHyperextension(keypoints, minScore = 0.35) {
     const angle = calculateAngle(rHip, rKnee, rAnkle);
     if (angle !== null) {
       joints.rightKneeAngle = angle;
-      if (angle >= 178) {
+      if (angle >= 184) {
         alerts.push({
           joint: 'Right Knee',
           jointIndex: POINTS.RIGHT_KNEE,
@@ -208,21 +208,22 @@ export function evaluatePoseBiomechanics(poseName, keypoints, minScore = 0.30) {
 
   switch (poseName) {
     case 'Tree': {
-      // 1. Hands sanity: wrists should be relatively close (e.g. within 1.0 * torso distance)
-      if (wristDist !== null && wristDist > torsoDist * 1.05) {
+      // 1. Hands sanity: gentle check that hands are raised near chest/head
+      if (wristDist !== null && wristDist > torsoDist * 1.35) {
         errors.push({ priority: 3, message: 'Bring your palms closer into prayer position.' });
         if (lWrist) jointStatus[POINTS.LEFT_WRIST] = 'warning';
         if (rWrist) jointStatus[POINTS.RIGHT_WRIST] = 'warning';
       }
 
-      // 2. Leg sanity: one leg standing (>135°), one leg folded in (<145°)
-      // Allows natural variation whether foot is at ankle, calf, or inner thigh without false alerts
+      // 2. Leg sanity: one leg standing, one leg folded
+      // Forgiving angle threshold (>120° for standing leg, <160° for bent leg)
+      // Works naturally whether foot is placed at ankle, calf, or inner thigh
       if (lKneeAngle !== null && rKneeAngle !== null) {
-        const leftFolded = lKneeAngle < 145 && rKneeAngle > 135;
-        const rightFolded = rKneeAngle < 145 && lKneeAngle > 135;
+        const leftFolded = lKneeAngle < 160 && rKneeAngle > 120;
+        const rightFolded = rKneeAngle < 160 && lKneeAngle > 120;
 
         if (!leftFolded && !rightFolded) {
-          errors.push({ priority: 2, message: 'Bend one knee outward to place foot on standing leg.' });
+          errors.push({ priority: 2, message: 'Fold one leg to rest foot against standing leg.' });
           jointStatus[POINTS.LEFT_KNEE] = 'warning';
           jointStatus[POINTS.RIGHT_KNEE] = 'warning';
         }

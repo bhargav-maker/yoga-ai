@@ -124,6 +124,7 @@ function Yoga() {
   const [currentCorrection, setCurrentCorrection] = useState(null);
   const [liveAccuracy, setLiveAccuracy] = useState(0);
   const [liveSteadiness, setLiveSteadiness] = useState(100);
+  const [isAudioTuneEnabled, setIsAudioTuneEnabled] = useState(false); // Off by default so rhythm tune never locks timer
 
   // Post-pose scorecard modal
   const [scorecard, setScorecard] = useState(null);
@@ -237,23 +238,22 @@ function Yoga() {
         let isPoseRecognized = false;
         let currentAccuracyPct = 70;
 
-        if (notDetected <= 5) {
+        if (notDetected <= 6) {
           const data = classifyPose(poseClassifier, input);
           const classNo = CLASS_NO[currentPose];
           const rawScore = data && data[0] ? data[0][classNo] : 0;
 
-          // Rolling 4-frame average for fast, responsive detection without lag
+          // Rolling 3-frame average for instant responsiveness
           rollingWindowRef.current.push(rawScore);
-          if (rollingWindowRef.current.length > 4) {
+          if (rollingWindowRef.current.length > 3) {
             rollingWindowRef.current.shift();
           }
           const avgScore = rollingWindowRef.current.reduce((a, b) => a + b, 0) / rollingWindowRef.current.length;
           currentAccuracyPct = Math.round(avgScore * 100);
           setLiveAccuracy(currentAccuracyPct);
 
-          // Forgiving, balanced detection:
-          // Recognizes posture if ML is confident (>0.75) or strong (>0.90)
-          if (avgScore > 0.90 || (avgScore > 0.75 && biomech.isGeometricallyValid)) {
+          // Responsive recognition: triggers naturally when posture is adopted
+          if (avgScore > 0.60 || biomech.isGeometricallyValid || (avgScore > 0.40 && notDetected <= 3)) {
             isPoseRecognized = true;
           }
         }
@@ -302,26 +302,27 @@ function Yoga() {
           }
         });
 
-        // --- ACCURATE REAL-TIME POSE TIMER ACCUMULATION ---
+        // --- PRECISE REAL-TIME POSE TIMER (Decoupled from audio tune) ---
         const now = Date.now();
         const deltaSeconds = (now - lastTickTimeRef.current) / 1000;
         lastTickTimeRef.current = now;
 
-        // Cap deltaSeconds to avoid giant jumps if tab was unfocused
-        const safeDelta = Math.min(0.15, Math.max(0, deltaSeconds));
+        // Smooth time accumulation (10 seconds of holding = exactly 10 seconds on timer)
+        const safeDelta = Math.min(0.20, Math.max(0, deltaSeconds));
 
         if (isPoseRecognized) {
-          // Accurate timer accumulation - counts continuously and reliably whenever pose is held
           setPoseTime((prev) => {
             const updated = prev + safeDelta;
             setBestPerform((best) => Math.max(best, updated));
             return updated;
           });
 
-          // Non-blocking tick chime: starts smoothly without blocking the timer
+          // Optional gentle rhythm chime (starts without stalling detection or timer)
           if (!flagRef.current) {
             flagRef.current = true;
-            countAudio.play().catch((audioErr) => console.warn('Audio notice:', audioErr));
+            if (isAudioTuneEnabled) {
+              countAudio.play().catch(() => {});
+            }
           }
 
           if (biomech.topCorrection) {
@@ -339,10 +340,12 @@ function Yoga() {
           }
         } else {
           flagRef.current = false;
-          countAudio.pause();
-          countAudio.currentTime = 0;
+          if (countAudio) {
+            countAudio.pause();
+            countAudio.currentTime = 0;
+          }
 
-          if (biomech.topCorrection && notDetected <= 3) {
+          if (biomech.topCorrection && notDetected <= 4) {
             audioCoach.speak(biomech.topCorrection);
           }
         }
@@ -350,7 +353,7 @@ function Yoga() {
         console.log('Detection frame processing error:', err);
       }
     }
-  }, [currentPose]);
+  }, [currentPose, isAudioTuneEnabled]);
 
   const scheduleNextDetection = useCallback((detector, poseClassifier, countAudio) => {
     timeoutRef.current = setTimeout(async () => {
@@ -496,6 +499,14 @@ function Yoga() {
                 <span className="hud-pct-val" style={{ color: '#38bdf8' }}>
                   ⚖️ {liveSteadiness}% Steady
                 </span>
+                <button
+                  type="button"
+                  onClick={() => setIsAudioTuneEnabled(!isAudioTuneEnabled)}
+                  className="hud-tune-toggle"
+                  title="Toggle tick chime tune (timer counts independently)"
+                >
+                  {isAudioTuneEnabled ? '🔔 Tune: ON' : '🔕 Tune: OFF'}
+                </button>
               </div>
               <span className={`hud-status-badge ${isPoseAligned ? 'aligned' : 'adjusting'}`}>
                 {isPoseAligned ? '● Aligned (60 FPS)' : '○ Adjusting Pose'}
@@ -521,11 +532,17 @@ function Yoga() {
               height={480}
             />
 
-            {/* In-Frame Correction Toast */}
+            {/* Animated Popping Voice Badge on Camera Screen */}
             {currentCorrection && (
-              <div className="camera-correction-toast">
-                <span className="correction-icon">⚠️</span>
-                <p className="correction-msg">{currentCorrection}</p>
+              <div className="camera-popping-badge" key={currentCorrection}>
+                <div className="popping-badge-glow"></div>
+                <div className="popping-badge-inner">
+                  <span className="popping-badge-icon">🎙️ ⚠️</span>
+                  <div className="popping-badge-text-wrap">
+                    <span className="popping-badge-speaker">Voice Coach:</span>
+                    <p className="popping-badge-content">{currentCorrection}</p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -539,20 +556,23 @@ function Yoga() {
               </div>
             </div>
 
-            {/* Fully uncropped reference pose image */}
+            {/* Fully uncropped reference pose image with Popping Asana Badge */}
             <div className="pose-img-container">
               <img 
                 src={poseImages[currentPose]} 
                 className="pose-img" 
                 alt={`${currentPose} target guidance`} 
               />
+              <div className="pose-pop-indicator">
+                <span>🧘 {currentPose} Target Form</span>
+              </div>
             </div>
 
             {/* Real-time mini metrics with Accuracy and Steadiness */}
             <div className="target-metrics-mini">
               <div className="mini-stat-item">
                 <span className="mini-stat-label">Pose Accuracy</span>
-                <span className="mini-stat-val" style={{ color: liveAccuracy > 75 ? '#10b981' : '#f59e0b' }}>
+                <span className="mini-stat-val" style={{ color: liveAccuracy > 60 ? '#10b981' : '#f59e0b' }}>
                   {liveAccuracy}%
                 </span>
               </div>
@@ -568,8 +588,8 @@ function Yoga() {
               </div>
             </div>
 
-            {/* Small Side Widget: Live Vocal & Text Correction Guidance */}
-            <div className={`side-correction-card ${currentCorrection ? 'has-correction' : 'perfect-alignment'}`}>
+            {/* Popping Side Widget: Live Vocal & Text Correction Guidance */}
+            <div className={`side-correction-card popping-card ${currentCorrection ? 'has-correction' : 'perfect-alignment'}`}>
               <div className="side-correction-header">
                 <span className="side-correction-icon">{currentCorrection ? '🎙️ ⚠️' : '✨ 🟢'}</span>
                 <span className="side-correction-title">

@@ -171,35 +171,127 @@
     border: 1px solid rgba(245, 158, 11, 0.4);
 }
 
-/* Floating Correction Guidance Toast */
-.camera-correction-toast {
+.hud-tune-toggle {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f8fafc;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    pointer-events: auto;
+}
+
+.hud-tune-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Animated Popping Voice Badge on Camera View */
+.camera-popping-badge {
     position: absolute;
-    bottom: 20px;
+    bottom: 24px;
     left: 20px;
     right: 20px;
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    border-left: 4px solid #ef4444;
-    padding: 10px 18px;
-    border-radius: 12px;
-    z-index: 10;
+    z-index: 20;
+    animation: badgePopUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePopUp {
+    0% { transform: translateY(20px) scale(0.9); opacity: 0; }
+    70% { transform: translateY(-4px) scale(1.02); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.popping-badge-glow {
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.5) 0%, rgba(239, 68, 68, 0.5) 100%);
+    border-radius: 16px;
+    filter: blur(8px);
+    opacity: 0.6;
+    animation: badgePulse 2s infinite alternate;
+}
+
+@keyframes badgePulse {
+    0% { opacity: 0.3; filter: blur(6px); }
+    100% { opacity: 0.8; filter: blur(10px); }
+}
+
+.popping-badge-inner {
+    position: relative;
+    background: rgba(15, 23, 42, 0.94);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(245, 158, 11, 0.5);
+    border-radius: 14px;
+    padding: 12px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-    animation: slideUp 0.3s ease;
+    gap: 14px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
 }
 
-.correction-icon {
-    font-size: 18px;
+.popping-badge-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
 }
 
-.correction-msg {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #fca5a5;
+.popping-badge-text-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.popping-badge-speaker {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fcd34d;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.popping-badge-content {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fef08a;
     margin: 0;
+    line-height: 1.4;
+}
+
+/* Popping Indicator on Target Pose Image */
+.pose-pop-indicator {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #34d399;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    animation: badgePopUp 0.4s ease-out;
+}
+
+/* Popping Side Card Animation */
+.side-correction-card.popping-card {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.side-correction-card.popping-card.has-correction {
+    animation: sideCardPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes sideCardPop {
+    0% { transform: scale(0.96); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
 }
 
 /* Target Pose Sidebar Card */
